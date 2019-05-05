@@ -1,6 +1,9 @@
-# isaactwitchmod
+# Isaac Twitch Mod Site
+
+Frontend for Isaac Twitch Mod Reloaded writing on Vue.js
 
 ## Project setup
+
 ```
 npm install
 ```
