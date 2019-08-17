@@ -1,7 +1,11 @@
 <template>
   <div id="app">
-    <div class="logo" :style="'background-image: url('+getImgUrl('logo')+')'"></div>
-    <router-view/>
+    <router-link to="/">
+      <div class="logo" :style="'background-image: url('+getImgUrl('logo')+')'"></div>
+    </router-link>
+    <transition name="screenAnim" mode="out-in">
+      <router-view/>
+    </transition>
   </div>
 </template>
 
@@ -24,6 +28,9 @@ export default {
   mounted () {
     this.$root.local = "en"
     this.local = this.$root.local;
+
+    this.$root.twitchConnect = null;
+    this.$root.youtubeConnect = null;
   }
 }
 </script>
@@ -52,10 +59,13 @@ body {
   padding: 0;
   text-decoration: none;
   image-rendering: pixelated;
+  overflow-x: hidden;
+  font-size: 1.5rem;
 }
 
 a {
   text-decoration: none;
+  color: inherit;
 }
 
 :visited {
@@ -64,6 +74,7 @@ a {
 
 .logo {
   margin-bottom: 16px;
+  width: auto;
   height: 16vh;
   min-height: 116px;
   background-position: center;
@@ -78,5 +89,26 @@ a {
 h1, h2, h3, h4, h5, h6 {
   font-family: "Upheaval";
   margin-top: 0;
+}
+
+.screenAnim-leave-active,
+.screenAnim-enter-active {
+  transition: all .3s ease-in-out;
+}
+
+.screenAnim-enter {
+  transform: translate(100%, 0);
+}
+
+.screenAnim-leave-to {
+  transform: translate(-100%, 0);
+}
+
+.twitch {
+  color: #6441a5;
+}
+
+.youtube {
+  color: #c4302b;
 }
 </style>

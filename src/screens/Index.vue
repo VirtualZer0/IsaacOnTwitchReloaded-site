@@ -8,7 +8,7 @@
         </MenuItem>
       </router-link>
 
-      <router-link to="/">
+      <router-link to="/login">
         <MenuItem img="communityImg" class="mainMenuItem">
           {{"community" | t(local)}}
         </MenuItem>

@@ -15,6 +15,11 @@ export default new Router({
       path: '/start',
       name: 'start',
       component: () => import('./screens/Start.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('./screens/Login.vue')
     }
   ]
 })

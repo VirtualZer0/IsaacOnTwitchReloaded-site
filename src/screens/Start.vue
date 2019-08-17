@@ -1,33 +1,61 @@
 <template>
   <div class="startScreen">
-    <div class="mainMenu">
-      <h1>{{"whoAreYou" | t(local)}}</h1>
+    <div class="waitSplash">
+      <div class="img" :style="'background-image:url(' + getImgUrl('hourglass') + ')'" alt="hourglass"/>
+      <div class="text">{{"connectingWait" | t(local)}}</div>
     </div>
   </div>
 </template>
 
 <script>
-import MenuItem from '../components/MenuItem.vue';
 
 export default {
   name: 'startScreen',
-  components: {
-    MenuItem
-  },
   
   computed: {
     local () {
       return this.$root.local;
+    }
+  },
+
+  methods: {
+    getImgUrl(img) {
+      var images = require.context('../assets/img/', false, /\.png$/)
+      return images('./' + img + ".png")
     }
   }
 }
 </script>
 
 <style lang="less">
-  .mainMenu {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    align-content: center;
+.waitSplash {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.7rem;
+
+  .img {
+    height: 15vw;
+    width: 15vw;
+    margin: 4vh auto;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+
+    animation: hourglassAnim 1s ease-in-out infinite;
   }
+}
+
+@keyframes hourglassAnim {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+  
+}
 </style>
