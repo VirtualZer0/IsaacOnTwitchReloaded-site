@@ -1,31 +1,56 @@
-import {TextMessage, DonateMessage, Subscriber} from './streamEvents';
+import {TextMessage, DonateMessage, Subscriber, Follower} from './streamEvents';
 
 export default class TwitchConnect {
 
   constructor (channel) {
     this.channel = channel;
+    this.userId = null;
 
+    this.apikey = "vtr91vw1dzji7piypq7r13itr6is2i";
     this.botname = "justinfan666";
     this.server = "irc-ws.chat.twitch.tv";
     this.port = 80;
 
-    this.webSocket = new WebSocket('ws://' + this.server + ':' + this.port + '/', 'irc');
+    this.consoleStyle = 'background-color: #6441A4; color: #FFFFFF; border-radius: 100px;padding: 1px 4px;';
 
-    this.webSocket.onmessage = this.onMessage.bind(this);
-    this.webSocket.onerror = this.onError.bind(this);
-    this.webSocket.onclose = this.onClose.bind(this);
-    this.webSocket.onopen = this.onOpen.bind(this);
+    this.lastFollowers = [];
+    this.plannedDisconnect = false;
 
     this.events = {
       onMessage: [],
       onSub: [],
-      onFollow: [],
+      onFollower: [],
       onBits: [],
 
       onConnect: [],
       onDisconnect: [],
       onError: []
     }
+  }
+
+  connect () {
+    this.webSocket = new WebSocket('ws://' + this.server + ':' + this.port + '/', 'irc');
+
+    this.webSocket.onmessage = this.onMessage.bind(this);
+    this.webSocket.onerror = this.onError.bind(this);
+    this.webSocket.onclose = this.onClose.bind(this);
+    this.webSocket.onopen = this.onOpen.bind(this);
+  }
+
+  startCheckNewFollowers () {
+    this.checkFollowersFrom = Date.now();
+
+    let waitUserId = setInterval((() => {
+      if (this.userId) {
+        clearInterval(waitUserId);
+        this._checkFollowers();
+        this.updFollowersTimer = setInterval(this._checkFollowers.bind(this), 3*60*1000);
+      }
+    }).bind(this), 500);
+  }
+
+  stopCheckNewFollowers () {
+    clearInterval(this.updFollowersTimer);
   }
 
   onMessage(msg) {
@@ -37,11 +62,17 @@ export default class TwitchConnect {
     let parsed = this._parseMessage(msg.data);
 
     //Ignore unparsed messages
-    if (parsed == null) return null;
+    if (parsed == null) return;
 
     // Get PING, send PONG
     if (parsed.command === "PING") {
       this.webSocket.send("PONG :" + parsed.message);
+      return;
+    }
+
+    // Get user id
+    if (parsed.command === "ROOMSTATE") {
+      this.userId = parsed.tags['room-id'];
       return;
     }
 
@@ -50,24 +81,25 @@ export default class TwitchConnect {
 
       // Gifted subs
       if (parsed.tags.hasOwnProperty("msg-param-recipient-display-name")) {
-        console.log("Подарочная подписка для " + parsed.tags["msg-param-recipient-display-name"]);
         this._signal('onSub', new Subscriber(
           parsed.tags["msg-param-recipient-id"],
           parsed.tags["msg-param-recipient-display-name"],
           'tw'
         ));
+
+        this._log("New gifted subscriber " + parsed.tags["msg-param-recipient-display-name"]);
       }
 
       // Basic subs
       else {
-        console.log("Подписка от " + parsed.tags["display-name"]);
         this._signal('onSub', new Subscriber(
           parsed.tags["user-id"],
           parsed.tags["display-name"],
           'tw'
         ));
       }
-      console.log(parsed.tags);
+
+      this._log("New subscriber " + parsed.tags["display-name"]);
     }
 
     // Handle bits
@@ -79,8 +111,7 @@ export default class TwitchConnect {
         'tw'
       ));
 
-      console.log("Битсы от " + parsed.tags["display-name"]);
-      console.log(parsed.tags);
+      this._log("Get donate from " + parsed.tags["display-name"] + " - " + parsed.tags["bits"]);
     }
 
     // Handle default message
@@ -95,17 +126,23 @@ export default class TwitchConnect {
 
   onError (msg) {
     this._signal('onError', msg);
-    console.log('Error: ' + msg);
+    this._log("Error: " + msg);
   }
 
   onClose () {
-    this._signal('onDisconnect');
-    console.log('Closed');
+    if (this.plannedDisconnect) {
+      this._signal('onDisconnect');
+    }
+    else {
+      this.connect();
+    }
+    
+    this._log("Disconnect from websocket");
   }
 
   onOpen () {
     if (this.webSocket !== null && this.webSocket.readyState === 1) {
-      console.log('Connecting and authenticating to Twitch');
+      this._log("Connected to websocket");
 
       this.webSocket.send('CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership');
       this.webSocket.send('NICK ' + this.botname);
@@ -116,6 +153,7 @@ export default class TwitchConnect {
   }
 
   close () {
+    this.plannedDisconnect = true;
     if(this.webSocket){
       this.webSocket.close();
     }
@@ -127,6 +165,42 @@ export default class TwitchConnect {
       func(data)
     });
 
+  }
+
+  _checkFollowers () {
+    fetch ("https://api.twitch.tv/helix/users/follows?first=100&to_id=" + this.userId, {
+      headers: {
+        'Client-ID': this.apikey
+      }
+    })
+    .then (res => res.json())
+    .then (res => {
+      res.data.forEach(follower => {
+        // If follower exists, skip it
+        if (this.lastFollowers.includes(follower.from_id)) return;
+
+        // Check array size and clear it if need
+        if (this.lastFollowers > 1000)
+          this.lastFollowers = this.lastFollowers.splice(100, 900);
+
+        // Add new follower to readed
+        this.lastFollowers.push(follower.from_id);
+
+        if (new Date(follower.followed_at) < this.checkFollowersFrom) return;
+
+        this._signal('onFollower', new Follower(
+          follower.from_id,
+          follower.from_name,
+          'tw'
+        ));
+
+        this._log("New follower " + follower.from_name);
+      })
+    })
+  }
+
+  _log (msg) {
+    console.log('%cTwitch%c ' + msg, this.consoleStyle, '');
   }
 
   _parseMessage(rawMessage) {

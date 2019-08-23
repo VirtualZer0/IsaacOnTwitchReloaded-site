@@ -24,3 +24,11 @@ export class Subscriber {
     this.source = source;
   }
 }
+
+export class Follower {
+  constructor (userId, userName, source) {
+    this.userId = userId;
+    this.userName = userName;
+    this.source = source;
+  }
+}

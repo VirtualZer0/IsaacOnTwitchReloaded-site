@@ -12,7 +12,7 @@
       </div>
     </div>
     <div>
-      <BigButton @onClick="login">{{"play" | t(local)}} ></BigButton>
+      <BigButton @onClick="connect">{{"play" | t(local)}} ></BigButton>
     </div>
   </div>
 </template>
@@ -22,6 +22,7 @@ import InputField from '../components/InputField.vue';
 import BigButton from '../components/BigButton.vue';
 
 import TwitchConnect from '../libs/twitchConnect.js';
+import YoutubeConnect from '../libs/youtubeConnect.js'
 
 export default {
   name: 'loginScreen',
@@ -51,8 +52,17 @@ export default {
       this.youtubeUrl = val;
     },
 
-    login () {
-      this.$root.twitchConnect = new TwitchConnect(this.twitchChannel);
+    connect () {
+      if (this.twitchChannel != '') {
+        this.$root.services.twitch = new TwitchConnect(this.twitchChannel);
+        this.$root.services.twitch.connect();
+        this.$root.services.twitch.startCheckNewFollowers();
+      }
+
+      if (this.youtubeUrl != '') {
+        this.$root.services.youtube = new YoutubeConnect(this.youtubeUrl);
+        this.$root.services.youtube.connect();
+      }
     }
   }
 }

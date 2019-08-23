@@ -28,9 +28,6 @@ export default {
   mounted () {
     this.$root.local = "en"
     this.local = this.$root.local;
-
-    this.$root.twitchConnect = null;
-    this.$root.youtubeConnect = null;
   }
 }
 </script>
