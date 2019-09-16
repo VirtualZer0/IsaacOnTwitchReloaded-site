@@ -14,7 +14,7 @@ export default {
   name: 'app',
   data () {
     return {
-      "local": "en"
+      local: "en"
     }
   },
 

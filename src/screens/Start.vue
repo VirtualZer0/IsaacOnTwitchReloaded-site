@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import IsaacConnect from '@/isaac/isaacConnect'
 
 export default {
   name: 'startScreen',
@@ -23,6 +24,10 @@ export default {
       var images = require.context('../assets/img/', false, /\.png$/)
       return images('./' + img + ".png")
     }
+  },
+
+  mounted () {
+    this.$root.services.itmr = new IsaacConnect();
   }
 }
 </script>

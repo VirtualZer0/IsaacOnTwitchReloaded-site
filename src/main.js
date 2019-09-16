@@ -11,7 +11,8 @@ new Vue({
     return {
       services: {
         twitch: null,
-        youtube: null
+        youtube: null,
+        itmr: null
       }
     }
   },
