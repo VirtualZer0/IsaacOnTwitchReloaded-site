@@ -1,6 +1,6 @@
 <template>
   <div class="menuItem">
-    <div class="img" :style="'background-image:url(' + this.getImgUrl(img) + ')'" :alt="img"/>
+    <div class="img" :style="'background-image:url(' + getImgUrl(img) + ')'" :alt="img"/>
     <slot></slot>
   </div>
 </template>
@@ -23,7 +23,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .menuItem {
     display: flex;
     flex-direction: column;

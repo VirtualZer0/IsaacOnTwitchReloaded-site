@@ -23,6 +23,8 @@ export default {
     "subs": "Subs",
     "bits": "Bits",
     "followers": "Followers",
-    "save": "Save"
+    "save": "Save",
+
+    "madeBy": "Made by Dorotos and VirtualZer0"
   }
 }

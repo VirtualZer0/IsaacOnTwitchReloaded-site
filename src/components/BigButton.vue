@@ -21,7 +21,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
 .bigButton {
   display: inline-block;
   margin: 0 auto;

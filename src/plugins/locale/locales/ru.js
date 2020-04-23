@@ -23,6 +23,8 @@ export default {
     "subs": "Сабы",
     "bits": "Битсы",
     "followers": "Фолловеры",
-    "save": "Сохранить"
+    "save": "Сохранить",
+
+    "madeBy": "Создано Dorotos и VirtualZer0"
   }
 }

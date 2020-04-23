@@ -1,39 +1,34 @@
 <template>
   <div id="app">
-    <router-link to="/">
-      <div class="logo" :style="'background-image: url('+getImgUrl('logo')+')'"></div>
-    </router-link>
-    <transition name="screenAnim" mode="out-in">
-      <router-view/>
-    </transition>
+    
+    <header>
+      <router-link to="/">
+        <div class="logo" :style="`background-image: url('${getImgUrl('logo')}')`"></div>
+      </router-link>
+    </header>
+
+    <main>
+      <transition name="screenAnim" mode="out-in">
+          <router-view/>
+      </transition>
+    </main>
+
+    <footer>
+      <p>{{"madeBy" | t($store.state.locale)}}</p>
+    </footer>
+
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app',
-  data () {
-    return {
-      local: "en"
-    }
-  },
-
-  methods: {
-    getImgUrl(img) {
-      var images = require.context('./assets/img/', false, /\.png$/)
-      return images('./' + img + ".png")
-    }
-  },
-
-  mounted () {
-    this.$root.local = "en"
-    this.local = this.$root.local;
-  }
+  name: 'app'
 }
 </script>
 
 
-<style lang="less">
+<style lang="scss">
+
 @font-face {
   font-family: "Upheaval";
   src: url("./assets/fonts/Upheaval/Upheaval.woff") format("woff"),
@@ -58,6 +53,25 @@ body {
   image-rendering: pixelated;
   overflow-x: hidden;
   font-size: 1.5rem;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  height: 120px;
+  margin-bottom: 24px;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
 }
 
 a {

@@ -1,6 +1,6 @@
 <template>
   <div class="loginScreen">
-    <h1>{{"whoAreYou" | t(local)}}</h1>
+    <h1>{{"whoAreYou" | t($store.state.locale)}}</h1>
     <div class="fields">
       <div class="field">
         <div class="sign twitch">Twitch</div>
@@ -12,7 +12,7 @@
       </div>
     </div>
     <div>
-      <BigButton @onClick="connect">{{"play" | t(local)}} ></BigButton>
+      <BigButton @onClick="connect">{{"play" | t($store.state.locale)}} ></BigButton>
     </div>
   </div>
 </template>
@@ -68,7 +68,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
 .mainMenu {
   display: flex;
   flex-wrap: wrap;

@@ -1,6 +1,14 @@
 export default class IsaacConnect {
 
   constructor (port = 666) {
+    this.stats = {
+      success: 0,
+      errors: 0
+    }
+
+    this.msgManager = new MessageManager();
+    this.msgManager.sendDataCallback = msg => this.sendToGame(msg)
+
     this.port = 666;
     this.handlers = {};
 
@@ -12,6 +20,7 @@ export default class IsaacConnect {
     this._log('Search game server...')
   }
 
+  // Search active game server
   search () {
     fetch('http://localhost:666', {
       method: 'POST',
@@ -22,24 +31,48 @@ export default class IsaacConnect {
       if (res.out == "pong") {
         this._log('Game server found')
         clearInterval(this.searchServerTimer);
-        this.connect()
+        this.testConnect()
       }
     })
     .catch (err => {})
   }
 
-  connect () {
-    
+  // Test requests
+  testConnect () {
+    setInterval(() => {
+      fetch('http://localhost:666', {
+        method: 'POST',
+        body: `{{{"m":"ping"}}}\n`
+      })
+      .then (res => res.json())
+      .then (res => {
+        if (res.out == "pong") {
+          this.stats.success ++;
+        }
+      })
+      .catch (err => {this.stats.errors ++;})
+
+      this._log(`${this.stats.success}|${this.stats.errors} / ${Math.round(this.stats.errors/(this.stats.success + this.stats.errors)*100, 2)}%`);
+    }, 250)
   }
 
-  snedToGame (method, data = null) {
-    return fetch('http://localhost:666', {
+  connect () {
+    this.msgPool.add({
+      m: 'connect'
+    })
+  }
+
+  // Send data to game
+  sendToGame (data) {
+    fetch('http://localhost:666', {
       method: 'POST',
-      body: `{{${JSON.stringify({m: method, d: data})}}}\n`
+      body: `{{${JSON.stringify(data)}}}\n`
     })
     .then (res => res.json())
+    .catch(this.msgManager.failed(data))
   }
 
+  // Request output data from game
   checkOutput () {
     fetch('http://localhost:666', {
       method: 'POST',
@@ -55,6 +88,24 @@ export default class IsaacConnect {
 
   _log (msg) {
     console.log('%cITMR%c ' + msg, this.consoleStyle, '');
+  }
+
+}
+
+// Retry request on fail
+class MessageManager {
+
+  constructor () {
+    this.sendDataCallback = (msg) => {}
+  }
+
+  send (method, data) {
+    let msg = {m: method, d: data};
+    this.sendDataCallback(msg);
+  }
+
+  failed (msg) {
+    this.sendDataCallback(msg);
   }
 
 }

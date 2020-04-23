@@ -4,19 +4,19 @@
 
       <router-link to="/start">
         <MenuItem img="startImg" class="mainMenuItem">
-          {{"start" | t(local)}}
+          {{"start" | t($store.state.locale)}}
         </MenuItem>
       </router-link>
 
       <router-link to="/login">
         <MenuItem img="communityImg" class="mainMenuItem">
-          {{"community" | t(local)}}
+          {{"community" | t($store.state.locale)}}
         </MenuItem>
       </router-link>
 
       <router-link to="/">
         <MenuItem img="downloadImg" class="mainMenuItem">
-          {{"download" | t(local)}}
+          {{"download" | t($store.state.locale)}}
         </MenuItem>
       </router-link>
     </div>
@@ -30,17 +30,11 @@ export default {
   name: 'IndexScreen',
   components: {
     MenuItem
-  },
-  
-  computed: {
-    local () {
-      return this.$root.local;
-    }
   }
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .mainMenu {
     display: flex;
     flex-wrap: wrap;

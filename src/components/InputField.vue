@@ -31,7 +31,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
 .inputField {
   background-image: url("../assets/img/inputBg.png");
   background-size: contain;

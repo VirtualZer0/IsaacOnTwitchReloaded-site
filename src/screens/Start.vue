@@ -1,8 +1,8 @@
 <template>
   <div class="startScreen">
     <div class="waitSplash">
-      <div class="img" :style="'background-image:url(' + getImgUrl('hourglass') + ')'" alt="hourglass"/>
-      <div class="text">{{"connectingWait" | t(local)}}</div>
+      <div class="img" :style="`background-image:url('${getImgUrl('hourglass')}')`" alt="hourglass"/>
+      <div class="text">{{"connectingWait" | t($store.state.locale)}}</div>
     </div>
   </div>
 </template>
@@ -12,27 +12,14 @@ import IsaacConnect from '@/isaac/isaacConnect'
 
 export default {
   name: 'startScreen',
-  
-  computed: {
-    local () {
-      return this.$root.local;
-    }
-  },
-
-  methods: {
-    getImgUrl(img) {
-      var images = require.context('../assets/img/', false, /\.png$/)
-      return images('./' + img + ".png")
-    }
-  },
 
   mounted () {
-    this.$root.services.itmr = new IsaacConnect();
+    this.$services.itmr = new IsaacConnect();
   }
 }
 </script>
 
-<style lang="less">
+<style lang="scss">
 .waitSplash {
   display: flex;
   flex-direction: column;
