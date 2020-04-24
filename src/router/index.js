@@ -19,6 +19,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('../screens/Login.vue')
+  },
+  {
+    path: '/mobile',
+    name: 'mobile',
+    component: () => import('../screens/Mobile.vue')
   }
 ]
 

@@ -9,10 +9,6 @@ export default {
   name: "BigButton",
 
   methods: {
-    getImgUrl(img) {
-      var images = require.context('../assets/img/', false, /\.png$/)
-      return images('./' + img + ".png")
-    },
 
     onClick () {
       this.$emit('onClick');

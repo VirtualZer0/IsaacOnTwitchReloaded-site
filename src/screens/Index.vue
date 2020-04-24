@@ -2,7 +2,7 @@
   <div class="indexScreen">
     <div class="mainMenu">
 
-      <router-link to="/start">
+      <router-link :to="isMobile ? '/mobile' : '/start'">
         <MenuItem img="startImg" class="mainMenuItem">
           {{"start" | t($store.state.locale)}}
         </MenuItem>
@@ -30,6 +30,17 @@ export default {
   name: 'IndexScreen',
   components: {
     MenuItem
+  },
+
+  computed: {
+    isMobile () {
+      if( window.innerWidth <= 760 ) {
+          return true;
+      }
+      else {
+          return false;
+      }
+    }
   }
 }
 </script>
@@ -40,5 +51,6 @@ export default {
     flex-wrap: wrap;
     justify-content: space-evenly;
     align-content: center;
+    height: inherit;
   }
 </style>

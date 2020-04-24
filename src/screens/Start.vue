@@ -20,6 +20,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 .waitSplash {
   display: flex;
   flex-direction: column;
@@ -30,6 +31,10 @@ export default {
   .img {
     height: 15vw;
     width: 15vw;
+
+    max-width: 1024;
+    max-height: 1024;
+
     margin: 4vh auto;
 
     background-repeat: no-repeat;

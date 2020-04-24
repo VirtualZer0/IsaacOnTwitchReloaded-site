@@ -15,6 +15,7 @@
 
     <footer>
       <p>{{"madeBy" | t($store.state.locale)}}</p>
+      <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded" target="_blank">{{"checkOnGithub" | t($store.state.locale)}}</a>
     </footer>
 
   </div>
@@ -52,7 +53,8 @@ body {
   text-decoration: none;
   image-rendering: pixelated;
   overflow-x: hidden;
-  font-size: 1.5rem;
+  font-size: calc(14px + (26 - 14) * ((100vw - 300px) / (1600 - 300)));
+  line-height: calc(1.3em + (1.5 - 1.2) * ((100vw - 300px)/(1600 - 300)));
 }
 
 #app {
@@ -62,8 +64,8 @@ body {
 }
 
 header {
-  height: 120px;
-  margin-bottom: 24px;
+  height: 10vh;
+  margin-bottom: 10vh;
 }
 
 main {
@@ -72,6 +74,16 @@ main {
 
 footer {
   flex-shrink: 0;
+  font-size: .8em;
+  padding-bottom: 36px;
+
+  p {
+    margin-bottom: 8px;
+  }
+
+  a {
+    border-bottom: 2px solid #333;
+  }
 }
 
 a {

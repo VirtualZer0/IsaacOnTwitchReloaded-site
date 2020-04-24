@@ -38,7 +38,7 @@ export default {
     background-size: contain;
     background-repeat: no-repeat;
 
-    font-size: 1.7rem;
+    font-size: 1.2em;
     cursor: pointer;
     transition: all .3s ease-out;
 
