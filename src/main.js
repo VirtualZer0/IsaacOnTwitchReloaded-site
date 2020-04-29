@@ -19,7 +19,7 @@ new Vue({
   store,
 
   beforeMount () {
-    this.$store.dispatch('initLocale');
+    this.$store.dispatch('init');
   },
 
   render: h => h(App)

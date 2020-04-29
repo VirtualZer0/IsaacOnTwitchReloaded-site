@@ -4,11 +4,11 @@
     <div class="fields">
       <div class="field">
         <div class="sign twitch">Twitch</div>
-        <InputField @onChange="setTwitch" placeholder="Channel name"/>
+        <InputField v-model="twitchChannel" placeholder="Channel name"/>
       </div>
       <div class="field">
         <div class="sign youtube">YouTube</div>
-        <InputField @onChange="setYouTube" placeholder="Stream URL"/>
+        <InputField v-model="youtubeUrl" placeholder="Stream URL"/>
       </div>
     </div>
     <div>
@@ -44,25 +44,23 @@ export default {
   },
 
   methods: {
-    setTwitch (val) {
-      this.twitchChannel = val;
-    },
-
-    setYouTube (val) {
-      this.youtubeUrl = val;
-    },
 
     connect () {
+
+      if (this.twitchChannel == '' && this.youtubeUrl == '') return;
+
       if (this.twitchChannel != '') {
-        this.$root.services.twitch = new TwitchConnect(this.twitchChannel);
-        this.$root.services.twitch.connect();
-        this.$root.services.twitch.startCheckNewFollowers();
+        this.$services.twitch = new TwitchConnect(this.twitchChannel);
+        this.$services.twitch.connect();
+        this.$services.twitch.startCheckNewFollowers();
       }
 
       if (this.youtubeUrl != '') {
-        this.$root.services.youtube = new YoutubeConnect(this.youtubeUrl);
-        this.$root.services.youtube.connect();
+        this.$services.youtube = new YoutubeConnect(this.youtubeUrl);
+        this.$services.youtube.connect();
       }
+
+      this.$router.push('/gamemode');
     }
   }
 }

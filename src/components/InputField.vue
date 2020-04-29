@@ -1,6 +1,6 @@
 <template>
   <div class="inputField">
-    <input v-model="val" type="text" :placeholder="placeholder" @change="onChange"/>
+    <input v-bind:value="val" v-on:input="$emit('input', $event.target.value)" type="text" :placeholder="placeholder"/>
   </div>
 </template>
 
@@ -9,23 +9,14 @@ export default {
   name: "InputField",
 
   props: {
-    placeholder: String
-  },
-
-  data () {
-    return {
-      val: ""
-    }
+    placeholder: String,
+    val: String
   },
 
   methods: {
     getImgUrl(img) {
       var images = require.context('../assets/img/', false, /\.png$/)
       return images('./' + img + ".png")
-    },
-
-    onChange () {
-      this.$emit('onChange', this.val);
     }
   }
 }

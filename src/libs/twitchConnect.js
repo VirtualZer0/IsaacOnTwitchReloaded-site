@@ -54,7 +54,6 @@ export default class TwitchConnect {
   }
 
   onMessage(msg) {
-
     // Ignore incorrect messages
     if (msg == null) return;
 

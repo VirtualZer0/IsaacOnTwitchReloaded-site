@@ -2,7 +2,7 @@
   <div id="app">
     
     <header>
-      <router-link to="/">
+      <router-link to="#">
         <div class="logo" :style="`background-image: url('${getImgUrl('logo')}')`"></div>
       </router-link>
     </header>
@@ -72,6 +72,14 @@ main {
   flex: 1 0 auto;
 }
 
+h1 {
+  font-size: 1.4em;
+}
+
+h2 {
+  font-size: 1.2em;
+}
+
 footer {
   flex-shrink: 0;
   font-size: .8em;
@@ -96,9 +104,11 @@ a {
 }
 
 .logo {
+  margin: 0 auto;
   margin-bottom: 16px;
   width: auto;
   height: 16vh;
+  max-width: 40vw;
   min-height: 116px;
   background-position: center;
   background-size: contain;
@@ -107,6 +117,42 @@ a {
 
 #app {
   text-align: center;
+}
+
+.panel-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-right: -3vw;
+}
+
+.panel {
+  min-width: 300px;
+  min-height: 300px;
+  width: 20vw;
+  height: 20vw;
+  background: url("./assets/img/cardBg.png") no-repeat;
+  background-size: contain;
+  padding: 2vw;
+  margin-right: 3vw;
+
+  h2 {
+    text-align: center;
+  }
+
+  p {
+    font-size: .6em;
+    height: 40%;
+  }
+}
+
+.panel.hoverable {
+  transition: .2s all ease-in-out;
+  cursor: pointer;
+}
+
+.panel.hoverable:hover {
+  transform: scale(1.05);
 }
 
 h1, h2, h3, h4, h5, h6 {

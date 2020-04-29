@@ -11,4 +11,3 @@ Vue.filter("t", (val, locale) => {
     return l_En.strings[val];
   }
 });
-

@@ -5,12 +5,41 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    locale: 'en'
+    locale: 'en',
+
+    settings: {
+
+      timings: {
+        vote: 35,
+        delay: 15
+      },
+
+      chances: {
+        events: 7,
+        items: 7,
+        trinkets: 2,
+        other: 1
+      },
+
+      subsAndBits: {
+        subs: true,
+        bits: true,
+        superchat: true,
+        follows: false
+      }
+
+    }
   },
   mutations: {
 
     setLocale (state, payload) {
       state.locale = payload;
+      localStorage.setItem('locale', state.locale);
+    },
+
+    setSettings (state, payload) {
+      state.settings = payload;
+      localStorage.setItem('settings', JSON.stringify(payload));
     }
 
   },
@@ -30,6 +59,21 @@ export default new Vuex.Store({
 
       }
 
+    },
+
+    init ({state, commit, dispatch}) {
+
+      if (localStorage.getItem('locale')) {
+        commit('setLocale', localStorage.getItem('locale'));
+      }
+      else {
+        dispatch('initLocale');
+        localStorage.setItem('locale', state.locale);
+      }
+
+      if (localStorage.getItem('settings')) {
+        commit('setSettings', JSON.parse(localStorage.getItem('settings')));
+      }
     }
 
   },

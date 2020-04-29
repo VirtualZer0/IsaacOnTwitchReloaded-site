@@ -21,6 +21,21 @@ const routes = [
     component: () => import('../screens/Login.vue')
   },
   {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('../screens/Settings.vue')
+  },
+  {
+    path: '/gamemode',
+    name: 'gamemode',
+    component: () => import('../screens/Gamemode.vue')
+  },
+  {
+    path: '/game',
+    name: 'game',
+    component: () => import('../screens/Game.vue')
+  },
+  {
     path: '/mobile',
     name: 'mobile',
     component: () => import('../screens/Mobile.vue')
