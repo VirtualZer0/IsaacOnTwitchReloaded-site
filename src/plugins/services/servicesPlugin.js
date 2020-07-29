@@ -1,4 +1,4 @@
-// Plugin for Vue to add services (like Twitch, Youtube, etc) globally into Vue object
+// Plugin for Vue to add services (like Twitch, Youtube, etc) and root Isaac object globally into Vue object
 
 let Services = {
 
@@ -9,6 +9,8 @@ let Services = {
       youtube: null,
       itmr: null
     }
+
+    vue.prototype.$isaac = null;
   
   }
 

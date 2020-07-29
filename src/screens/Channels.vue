@@ -4,11 +4,11 @@
     <div class="fields">
       <div class="field">
         <div class="sign twitch">Twitch</div>
-        <InputField v-model="twitchChannel" placeholder="Channel name"/>
+        <InputField v-model="twitchChannel" :placeholder="'channelName' | t($store.state.locale)"/>
       </div>
       <div class="field">
         <div class="sign youtube">YouTube</div>
-        <InputField v-model="youtubeUrl" placeholder="Stream URL"/>
+        <InputField v-model="youtubeUrl" :placeholder="'streamURL' | t($store.state.locale)"/>
       </div>
     </div>
     <div>

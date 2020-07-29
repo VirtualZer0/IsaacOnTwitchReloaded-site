@@ -2,20 +2,20 @@
   <div class="gamemodeScreen">
     <h1>{{"gamemode" | t($store.state.locale)}}</h1>
     
-    <div class="panel-container">
+    <div class="panel-container" @click="start(0)">
       <div class="panel hoverable">
         <h2>{{"easy" | t($store.state.locale)}}</h2>
         <p>{{"easyDesc" | t($store.state.locale)}}</p>
         <img :src="getImgUrl('easyImg')"/>
       </div>
 
-      <div class="panel hoverable">
+      <div class="panel hoverable" @click="start(1)">
         <h2>{{"default" | t($store.state.locale)}}</h2>
         <p>{{"defaultDesc" | t($store.state.locale)}}</p>
         <img :src="getImgUrl('defaultImg')"/>
       </div>
 
-      <div class="panel hoverable">
+      <div class="panel hoverable" @click="start(2)">
         <h2>{{"crazy" | t($store.state.locale)}}</h2>
         <p>{{"crazyDesc" | t($store.state.locale)}}</p>
         <img :src="getImgUrl('crazyImg')"/>
@@ -28,6 +28,7 @@
 
 <script>
 import BigButton from '../components/BigButton.vue';
+import Isaac from '../isaac/Isaac'
 
 export default {
   name: 'gamemodeScreen',
@@ -36,8 +37,12 @@ export default {
   },
 
   methods: {
-    start () {
+    start (gamemode) {
       
+      this.$isaac = new Isaac(this.$services, this.$store.state.locale, gamemode);
+      this.$isaac.start();
+      this.$router.push('/game');
+
     }
   }
 }

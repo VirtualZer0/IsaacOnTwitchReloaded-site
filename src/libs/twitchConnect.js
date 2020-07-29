@@ -17,14 +17,14 @@ export default class TwitchConnect {
     this.plannedDisconnect = false;
 
     this.events = {
-      onMessage: [],
-      onSub: [],
-      onFollower: [],
-      onBits: [],
+      onMessage: () => {},
+      onSub: () => {},
+      onFollower: () => {},
+      onBits: () => {},
 
-      onConnect: [],
-      onDisconnect: [],
-      onError: []
+      onConnect: () => {},
+      onDisconnect: () => {},
+      onError: () => {}
     }
   }
 
@@ -159,11 +159,7 @@ export default class TwitchConnect {
   }
 
   _signal (name, data) {
-
-    this.events[name].forEach(func => {
-      func(data)
-    });
-
+    this.events[name](data);
   }
 
   _checkFollowers () {

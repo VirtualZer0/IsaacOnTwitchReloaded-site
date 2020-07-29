@@ -16,9 +16,9 @@ const routes = [
     component: () => import('../screens/Start.vue')
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('../screens/Login.vue')
+    path: '/channels',
+    name: 'channels',
+    component: () => import('../screens/Channels.vue')
   },
   {
     path: '/settings',

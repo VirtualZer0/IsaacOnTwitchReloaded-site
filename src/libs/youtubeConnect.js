@@ -18,14 +18,14 @@ export default class YoutubeConnect {
     }
 
     this.events = {
-      onMessage: [],
-      onSub: [],
-      onFollower: [],
-      onSuperchat: [],
+      onMessage: () => {},
+      onSub: () => {},
+      onFollower: () => {},
+      onSuperchat: () => {},
 
-      onConnect: [],
-      onDisconnect: [],
-      onError: []
+      onConnect: () => {},
+      onDisconnect: () => {},
+      onError:  () => {}
     }
   }
 
@@ -119,9 +119,7 @@ export default class YoutubeConnect {
 
   _signal (name, data) {
 
-    this.events[name].forEach(func => {
-      func(data)
-    });
+    this.events[name](data);
 
   }
 

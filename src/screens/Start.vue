@@ -14,7 +14,10 @@ export default {
   name: 'startScreen',
 
   mounted () {
-    this.$services.itmr = new IsaacConnect();
+    this.$services.itmr = new IsaacConnect(666, this.$store.state.locale);
+    this.$services.itmr.events.onConnect = () => {
+      this.$router.push('/channels');
+    }
   }
 }
 </script>

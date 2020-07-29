@@ -4,8 +4,8 @@
     <div class="panel-container">
       <div class="panel">
         <h2>{{"status" | t($store.state.locale)}}</h2>
-        <div class="textline">{{"connected" | t($store.state.locale)}}</div>
-        <div>00:00</div>
+        <div class="textline">{{"disconnected" | t($store.state.locale)}}</div>
+        <div>{{gameTime}}</div>
       </div>
 
       <div class="panel">
@@ -34,9 +34,25 @@ export default {
     BigButton
   },
 
+  data: () => ({
+
+    gameTime: '00:00:00',
+    startTime: null,
+    gameTimeTimer: null
+
+  }),
+
+  mounted () {
+    this.startTime = Date.now();
+    this.gameTimeTimer = setInterval(this.updGameTime, 900);
+  },
+
   methods: {
-    start () {
-      
+    updGameTime () {
+      let time = new Date(Date.now() - this.startTime);
+      this.gameTime = (time.getUTCHours() <= 9 ? `0${time.getUTCHours()}` : time.getUTCHours()).toString() + ':' +
+        (time.getUTCMinutes() <= 9 ? `0${time.getUTCMinutes()}` : time.getUTCMinutes()).toString() + ':' +
+        (time.getUTCSeconds() <= 9 ? `0${time.getUTCSeconds()}` : time.getUTCSeconds()).toString()
     }
   }
 }
