@@ -2,16 +2,10 @@ import {ITMR_GAMEMODES} from './data/enums'
 
 import ITMRText from './models/ITMRText'
 
-import mod_activeItems from './data/mod/activeItems'
-import mod_passiveItems from './data/mod/passiveItems'
-import mod_familiars from './data/mod/familiars'
-import mod_trinkets from './data/mod/trinkets'
-import mod_events from './data/mod/events'
+import BinaryPoll from './classes/BinaryPoll'
+import DefaultPoll from './classes/DefaultPoll'
 
-import vanilla_activeItems from './data/vanilla/activeItems'
-import vanilla_passiveItems from './data/vanilla/passiveItems'
-import vanilla_familiars from './data/vanilla/familiars'
-import vanilla_trinkets from './data/vanilla/trinkets'
+import {getRandomElementsFromArr} from './helperFuncs'
 
 import streamers from './data/streamers'
 
@@ -19,25 +13,227 @@ import t from '../plugins/locale/translateFunction';
 
 export default class Isaac {
 
-  constructor (services, lang = 'en', gamemode = ITMR_GAMEMODES.NORMAL) {
+  constructor (services, settings, lang = 'en', gamemode = ITMR_GAMEMODES.NORMAL) {
 
-    this.services = services;
-    this.lang = lang;
-    this.gamemode = gamemode;
+    this.services = services;       // Twitch, Youtube and Isaac connectors
+    this.settings = settings;       // Current settings
+    this.lang = lang;               // Current language
+    this.gamemode = gamemode;       // Current gamemode
 
-    this.lists = {
-      items: [
-        ...mod_activeItems, ...mod_passiveItems, ...mod_familiars,
-        ...vanilla_activeItems, ...vanilla_passiveItems, ...vanilla_familiars
-      ],
+    this.lists = {};                // All items, trinkets, events, etc.
 
-      trinkets: [
-        ...mod_trinkets, ...vanilla_trinkets
-      ],
+    this.timer = null;              // Main setInterval id
+    this.time = 5;                  // Current time in seconds
+    this.phase = 'gameSetupDone';   // Current phase
+    this.action = null;             // Current polling action (removeItem, giveTrinket, etc.)
+    this.currentText = ""
 
-      events: [
-        ...mod_events
-      ],
+    this.poll = null;               // Current poll object
+    this.special = {                // Special parameters
+      russinaHackers: {             // Parameters for Russian hackers event
+        enabled: false,
+        shuffle: []
+      }
+    }
+  }
+
+  // Launch Isaac on Twitch
+  start () {
+    this.timer = setInterval(() => this.tick(), 1000);
+    this.text = t('gameSetupDone', this.lang);
+
+    this.services.itmr.sendToGame({
+      m: 'removeText',
+      d: {name: 'gameConnected'}
+    });
+
+    this.sendSettings()
+    .then (() => {
+      this.loadData();
+    });
+    
+  }
+
+  // Timer loop, call every second
+  tick () {
+
+    if (this.phase == "wait" || this.phase == "pause") return;
+
+    if (this.time < 0) {
+
+      this.services.itmr.sendToGame({
+        m: 'removeText',
+        d: {name: 'firstLine'}
+      });
+
+      this.services.itmr.sendToGame({
+        m: 'removeText',
+        d: {name: 'secondLine'}
+      });
+
+      this.changePhase();
+      return;
+    }
+
+    this.services.itmr.sendToGame({
+      m: 'addText',
+      d: new ITMRText('firstLine', `${this.text} ${this.time}${t('s', this.lang)}`, this.settings.textpos.l1)
+    });
+
+    this.time--;
+
+  }
+
+  // When time is 0, switch to new phase, based on previously phase
+  changePhase () {
+    if (this.phase == "gameSetupDone" || this.phase == "delay") {
+
+      this.services.itmr.sendToGame({
+        m: 'removeText',
+        d: {name: 'firstLine'}
+      });
+
+      this.services.itmr.sendToGame({
+        m: 'removeText',
+        d: {name: 'secondLine'}
+      });
+
+      this.time = this.settings.timings.vote;
+      this.setRandomPolling();
+
+    }
+    else if (this.phase == "defaultPoll") {
+
+      this.phase = "delay"
+      this.time = this.settings.timings.delay;
+      this.text = t('pollResult', this.lang);
+
+    }
+  }
+
+  // Select random polling
+  setRandomPolling () {
+
+    this.setItemPolling();
+
+  }
+
+  // Decide, give or remove item
+  setItemPolling () {
+
+    let playerItems = [];
+    this.phase = "wait";
+
+    // Get player items
+    this.services.itmr.sendToGame({
+      m: 'getPlayerItems'
+    })
+    .then (res => {
+      playerItems = res.out;
+      console.log(playerItems);
+      this.state = "defaultPoll";
+
+      // Remove item with 28% chance and if player have more than 3 items
+      if (Math.random() < .28 && playerItems.length > 3) {
+
+        // Set poll state
+        this.action = "removeItem";
+        this.text = t('selectItemForRemove', this.lang);
+        
+        // Set firstline text
+        this.services.itmr.sendToGame({
+          m: 'addText',
+          d: new ITMRText(
+            'firstLine',
+            `${this.text} ${this.time}${t('s', this.lang)}`, this.settings.textpos.l1
+          )
+        });
+
+        // Select three items for removing and get names
+        let itemsToRemove = getRandomElementsFromArr(this.lists.items, 3).map(itemId => {
+          return this.getItemById(this.lists.items, itemId);
+        });
+
+        // Create new default poll
+        this.poll = new DefaultPoll(this, itemsToRemove);
+
+        // Set second line text
+        this.services.itmr.sendToGame({
+          m: 'addText',
+          d: new ITMRText('secondLine', this.poll.getText(), this.settings.textpos.l2)
+        });
+  
+      }
+
+      // Give item with 72% chance
+      else {
+
+        this.text = t('selectItem', this.lang);
+
+        // Set firstline text
+        this.services.itmr.sendToGame({
+          m: 'addText',
+          d: new ITMRText(
+            'firstLine',
+            `${this.text} ${this.time}${t('s', this.lang)}`, this.settings.textpos.l1
+          )
+        });
+
+        // Remove collected items from variants
+        let currentItemPool = this.lists.items.filter(item => {
+          return playerItems.findIndex(playerItem => playerItem == item.id)
+        });
+
+        // Create new default poll
+        this.poll = new DefaultPoll(this, getRandomElementsFromArr(currentItemPool, 3));
+
+        // Set second line text
+        this.services.itmr.sendToGame({
+          m: 'addText',
+          d: new ITMRText('secondLine', this.poll.getText(), this.settings.textpos.l2)
+        });
+
+      }
+    })
+
+
+    
+
+  }
+
+  // Give gift for available streamers
+  giveGift () {
+
+  }
+
+  // Get item name by id
+  getItemById (list, id) {
+
+    return list.find(item => item.id == id);
+
+  }
+
+  // Send settings to game
+  sendSettings () {
+
+    return this.services.itmr.sendToGame({
+      m: 'settings',
+      d: {
+        textpos: this.settings.textpos,
+        subtime: this.settings.subtime,
+        lang: this.lang
+      }
+    });
+
+  }
+
+  // Load all items, trinkets and events from game
+  loadData () {
+
+    this.lists = {                  // List of all polling types
+      items: [],
+      trinkets: [],
+      events: [],
 
       pickups: [
         'money', 'bomb', 'key', 'battery', 'pill', 'card', 'rune', 'sack', 'bits'
@@ -160,62 +356,19 @@ export default class Isaac {
 
     }
 
-    this.timer = null;
-    this.time = 5;
-    this.phase = 'gameSetupDone';
-  }
-
-  // Launch Isaac on Twitch
-  start () {
-    this.timer = setInterval(() => this.tick(), 1000);
-
+    // Load items from mod
     this.services.itmr.sendToGame({
-      m: 'removeText',
-      d: {name: 'gameConnected'}
+      m: 'getItems'
+    })
+    .then (res => {
+      
+      this.lists.items.push(...res.out.active);
+      this.lists.items.push(...res.out.passive);
+      this.lists.items.push(...res.out.familiars);
+      this.lists.trinkets.push(...res.out.trinkets);
+      this.lists.events.push(...res.out.events);
+
     });
-
-    this.services.itmr.sendToGame({
-      m: 'addText',
-      d: new ITMRText('gameSetupDone', `${t('gameSetupDone', this.lang)} ${this.time}${t('s', this.lang)}`)
-    });
-  }
-
-  // Timer loop, call every second
-  tick () {
-
-    if (this.time < 0) {
-      this.changePhase();
-      return;
-    }
-
-    switch (this.phase) {
-
-      case 'gameSetupDone':
-        this.services.itmr.sendToGame({
-          m: 'addText',
-          d: new ITMRText('gameSetupDone', `${t('gameSetupDone', this.lang)} ${this.time}${t('s', this.lang)}`)
-        });
-        break;
-
-    }
-
-    this.time--;
-
-  }
-
-  // When time is 0, switch to new phase, based on previously phase
-  changePhase () {
-
-  }
-
-  // Select random polling
-  setRandomPolling () {
-
-  }
-
-  // Give gift for available streamers
-  giveGift () {
-
   }
 
 }

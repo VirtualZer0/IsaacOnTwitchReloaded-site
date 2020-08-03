@@ -29,13 +29,14 @@
         <input-switcher v-model="settings.subsAndBits.subs" :isBool="true">{{"subs" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.subsAndBits.bits" :isBool="true">{{"bits" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.subsAndBits.superchat" :isBool="true">{{"superchat" | t($store.state.locale)}}</input-switcher>
-        <input-switcher v-model="settings.subsAndBits.follows" :isBool="true">{{"followers" | t($store.state.locale)}}</input-switcher>
+        <!--<input-switcher v-model="settings.subsAndBits.follows" :isBool="true">{{"followers" | t($store.state.locale)}}</input-switcher>-->
 
       </div>
 
     </div>
 
-    <big-button @onClick="saveAndExit()">Назад</big-button>
+    <big-button @onClick="saveAndExit()">{{"back" | t($store.state.locale)}}</big-button>
+    <big-button @onClick="$router.push('/gamemode')">{{"next" | t($store.state.locale)}}</big-button>
 
   </div>
 </template>
@@ -70,7 +71,14 @@ export default {
           bits: true,
           superchat: true,
           follows: false
-        }
+        },
+
+        textpos: {
+          l1: {X: 16, Y: 215},
+          l2: {X: 16, Y: 235}
+        },
+
+        subtime: 10*60*30
       }
     }
   },

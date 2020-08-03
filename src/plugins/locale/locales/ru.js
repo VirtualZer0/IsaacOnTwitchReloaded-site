@@ -23,8 +23,19 @@ export default {
     "followers": "Фолловеры",
     "save": "Сохранить",
     "back": "Назад",
+    "next": "Далее",
     "channelName": "Имя канала",
     "streamURL": "Ссылка на стрим",
+
+    "mod": "Мод",
+    "site": "Сайт",
+    "repo": "Репозиторий",
+    "bugReport": "Сообщить о баге",
+
+    "direct": "Напрямую",
+    "useSteam": "Установи мод используя Steam - актуальная версия с автообновлением",
+    "useMOI": "Скачай через Modding Of Isaac - сайт с коллекцией модов",
+    "useDirect": "Скачай ZIP-архив напрямую со страницы GitHub",
 
     "madeBy": "Создано Dorotos и VirtualZer0",
     "checkOnGithub": "Этот проект на GitHub",
@@ -53,6 +64,9 @@ export default {
 
     "gameConnected": "Теперь введите данные для Twich и/или YouTube на сайте",
     "gameSetupDone": "Отлично! Голосование начнется через",
+    "selectItemForRemove": "Выберите предмет для удаления",
+    "selectItem": "Выберите предмет",
+    "pollResult": "Вы получили",
 
     "money": "Деньги",
     "bomb": "Бомба",
@@ -84,64 +98,5 @@ export default {
     "blueFlies": "Синие мухи",
     "prettyFly": "Милая мушка",
 
-    "evRichy-name": "Богатства",
-    "evRichy-desc": "Сегодня тебе везет",
-
-    "evPoop-name": "Какахи",
-    "evPoop-desc": "И кто теперь будет это убирать?",
-
-    "evHell-name": "Ад",
-    "evHell-desc": "Огненный и кровавый",
-
-    "evSpiky-name": "Шипы",
-    "evSpiky-desc": "Ауч!",
-
-    "evEarthquake-name": "Землетрясение",
-    "evEarthquake-desc": "Защищай свою голову!",
-
-    "evAngelRage-name": "Ангельская ярость",
-    "evAngelRage-desc": "Святое дерьмецо!",
-
-    "evDevilRage-name": "Дьявольская ярость",
-    "evDevilRage-desc": "Какого черта?",
-
-    "evRainbowRain-name": "Радужный дождь",
-    "evRainbowRain-desc": "Единорог не сдержался",
-
-    "evRUN-name": "БЕГИ",
-    "evRUN-desc": "Беги, Форест, беги!",
-
-    "evFlashJump-name": "Гипер-прыжок",
-    "evFlashJump-desc": "Быстрее скорости света",
-
-    "evEnemyRegen-name": "Реген врагов",
-    "evEnemyRegen-desc": "Поддержка для твоих врагов",
-
-    "evFlashmob-name": "Флэшмоб",
-    "evFlashmob-desc": "Повторяй за мной!",
-
-    "evAttackOnTitan-name": "Атака титанов",
-    "evAttackOnTitan-desc": "Твои враги больше и сильнее",
-
-    "evDiarrhea-name": "Диарея",
-    "evDiarrhea-desc": "Из чего был сделан тот суп?",
-
-    "evBladeStorm-name": "Шторм из клинков",
-    "evBladeStorm-desc": "Никто не уйдет непроткнутым",
-
-    "evMoreAwards-name": "Больше наград",
-    "evMoreAwards-desc": "Больше наград за твои старания",
-
-    "evStanleyParable-name": "Stanley Parable",
-    "evStanleyParable-desc": "Стэнли нажимал на кнопки",
-
-    "evSupernova-name": "Сверхновая",
-    "evSupernova-desc": "УНИЧТОЖЬ ЭТОТ МИР!",
-
-    "evDDoS-name": "DDoS",
-    "evDDoS-desc": "Уберите Виджейлинков от экрана",
-
-    "evInterstellar-name": "Интерстеллар",
-    "evInterstellar-desc": "Нет, внутри нет библиотеки"
   }
 }

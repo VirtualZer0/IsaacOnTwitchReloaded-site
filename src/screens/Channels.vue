@@ -60,7 +60,7 @@ export default {
         this.$services.youtube.connect();
       }
 
-      this.$router.push('/gamemode');
+      this.$router.push('/settings');
     }
   }
 }

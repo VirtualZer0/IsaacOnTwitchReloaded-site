@@ -14,7 +14,7 @@ export default class DefaultPoll {
 
     // If "Russian hackers" event is active
     if (this.Isaac.special.russianHackers.enabled) {
-      isPositive = math.random() >= .5 ? true : false;
+      isPositive = Math.random() >= .5 ? true : false;
     }
 
     if (this.users[user] && isPositive != this.users[user]) {

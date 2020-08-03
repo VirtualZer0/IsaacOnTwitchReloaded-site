@@ -13,11 +13,6 @@
       </transition>
     </main>
 
-    <footer>
-      <p>{{"madeBy" | t($store.state.locale)}}</p>
-      <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded" target="_blank">{{"checkOnGithub" | t($store.state.locale)}}</a>
-    </footer>
-
   </div>
 </template>
 
@@ -80,10 +75,10 @@ h2 {
   font-size: 1.2em;
 }
 
-footer {
+.credits {
   flex-shrink: 0;
   font-size: .8em;
-  padding-bottom: 36px;
+  margin-top: 48px;
 
   p {
     margin-bottom: 8px;

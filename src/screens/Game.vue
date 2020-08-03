@@ -16,8 +16,8 @@
 
       <div class="panel">
         <h2>{{"services" | t($store.state.locale)}}</h2>
-        <div class="textline youtube">YouTube: {{"no" | t($store.state.locale)}}</div>
-        <div class="textline twitch">Twitch: {{"no" | t($store.state.locale)}}</div>
+        <div class="textline youtube">YouTube: {{(youtube ? 'yes' : 'no') | t($store.state.locale)}}</div>
+        <div class="textline twitch">Twitch: {{(twitch ? 'yes' : 'no') | t($store.state.locale)}}</div>
       </div>
 
     </div>
@@ -38,13 +38,18 @@ export default {
 
     gameTime: '00:00:00',
     startTime: null,
-    gameTimeTimer: null
+    gameTimeTimer: null,
+    twitch: false,
+    youtube: false
 
   }),
 
   mounted () {
     this.startTime = Date.now();
     this.gameTimeTimer = setInterval(this.updGameTime, 900);
+
+    this.twitch = !!this.$services.twitch;
+    this.youtube = !!this.$services.youtube;
   },
 
   methods: {

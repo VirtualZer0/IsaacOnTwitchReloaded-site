@@ -26,7 +26,14 @@ export default new Vuex.Store({
         bits: true,
         superchat: true,
         follows: false
-      }
+      },
+
+      textpos: {
+        l1: {X: 16, Y: 215},
+        l2: {X: 16, Y: 235}
+      },
+
+      subtime: 10*60*30
 
     }
   },

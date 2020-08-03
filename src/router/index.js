@@ -13,32 +13,42 @@ const routes = [
   {
     path: '/start',
     name: 'start',
-    component: () => import('../screens/Start.vue')
+    component: () => import(/* webpackChunkName: "start-screen" */'../screens/Start.vue')
+  },
+  {
+    path: '/community',
+    name: 'community',
+    component: () => import(/* webpackChunkName: "community-screen" */'../screens/Community.vue')
+  },
+  {
+    path: '/download',
+    name: 'download',
+    component: () => import(/* webpackChunkName: "download-screen" */'../screens/Download.vue')
   },
   {
     path: '/channels',
     name: 'channels',
-    component: () => import('../screens/Channels.vue')
+    component: () => import(/* webpackChunkName: "channels-screen" */'../screens/Channels.vue')
   },
   {
     path: '/settings',
     name: 'settings',
-    component: () => import('../screens/Settings.vue')
+    component: () => import(/* webpackChunkName: "settings-screen" */'../screens/Settings.vue')
   },
   {
     path: '/gamemode',
     name: 'gamemode',
-    component: () => import('../screens/Gamemode.vue')
+    component: () => import(/* webpackChunkName: "gamemode-screen" */'../screens/Gamemode.vue')
   },
   {
     path: '/game',
     name: 'game',
-    component: () => import('../screens/Game.vue')
+    component: () => import(/* webpackChunkName: "game-screen" */'../screens/Game.vue')
   },
   {
     path: '/mobile',
     name: 'mobile',
-    component: () => import('../screens/Mobile.vue')
+    component: () => import(/* webpackChunkName: "mobile-screen" */'../screens/Mobile.vue')
   }
 ]
 

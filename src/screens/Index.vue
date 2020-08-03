@@ -8,17 +8,22 @@
         </MenuItem>
       </router-link>
 
-      <router-link to="/login">
+      <router-link to="/community">
         <MenuItem img="communityImg" class="mainMenuItem">
           {{"community" | t($store.state.locale)}}
         </MenuItem>
       </router-link>
 
-      <router-link to="/">
+      <router-link to="/download">
         <MenuItem img="downloadImg" class="mainMenuItem">
           {{"download" | t($store.state.locale)}}
         </MenuItem>
       </router-link>
+    </div>
+
+    <div class="credits">
+      <p>{{"madeBy" | t($store.state.locale)}}</p>
+      <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded" target="_blank">{{"checkOnGithub" | t($store.state.locale)}}</a>
     </div>
   </div>
 </template>
