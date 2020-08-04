@@ -37,13 +37,20 @@ export default class YoutubeConnect {
     .then (res => {
       this.chatId = res.items[0].liveStreamingDetails.activeLiveChatId;
       this._updateChat();
-      this.updTimer = setInterval(this._updateChat.bind(this), 6000);
+      this.updTimer = setInterval(this._updateChat.bind(this), 3000);
       
       this._log("Connected to " + this.chatId);
     })
     .catch (err => {
       this._signal('onError', err);
     })
+  }
+
+  disconnect () {
+
+    clearInterval(this.updTimer);
+    this._signal('onDisconnect', null);
+
   }
 
   _updateChat () {
@@ -65,10 +72,12 @@ export default class YoutubeConnect {
 
         // Check if this is a basic message
         if (msg.snippet.type == 'textMessageEvent') {
+
           this._signal('onMessage', new TextMessage(
             msg.snippet.authorChannelId,
             msg.authorDetails.displayName,
-            msg.snippet.displayMessage
+            msg.snippet.displayMessage,
+            'yt'
           ));
           return;
         }

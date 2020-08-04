@@ -26,7 +26,18 @@ export default class Isaac {
     this.time = 5;                  // Current time in seconds
     this.phase = 'gameSetupDone';   // Current phase
     this.action = null;             // Current polling action (removeItem, giveTrinket, etc.)
-    this.currentText = ""
+
+    this.text = {                   // Current text lines
+      firstline: null,
+      secondline: null
+    }
+
+    this.previousText = {           // Previous text lines. Needed for optimize requests count
+      firstline: null,
+      secondline: null
+    }
+
+    this.isPaused = false;
 
     this.poll = null;               // Current poll object
     this.special = {                // Special parameters
@@ -35,17 +46,47 @@ export default class Isaac {
         shuffle: []
       }
     }
+
+    this.colors = {                 // Colors storage
+      yellow: {r: 1, g: 215/255, b: 0, a: 1}
+    }
+
+    // Bind events for Twitch
+    if (this.services.twitch) {
+      this.services.twitch.events.onMessage = this.onMessage.bind(this);
+    }
+
+    // Bind events for Youtube
+    if (this.services.youtube) {
+      this.services.youtube.events.onMessage = this.onMessage.bind(this);
+    }
   }
 
   // Launch Isaac on Twitch
   start () {
     this.timer = setInterval(() => this.tick(), 1000);
-    this.text = t('gameSetupDone', this.lang);
 
+    // Create text lines
+    this.text['firstline'] = new ITMRText(
+      'firstLine',
+      `${t('gameSetupDone', this.lang)}`,
+      this.settings.textpos.l1,
+      this.colors.yellow
+    );
+
+    this.text['secondline'] = new ITMRText(
+      'secondLine',
+      '',
+      this.settings.textpos.l2,
+    );
+    
+    this.text['firstline'].setPostfix(`(${this.time}${t('s', this.lang)})`);
+
+    // Remove previous text
     this.services.itmr.sendToGame({
       m: 'removeText',
       d: {name: 'gameConnected'}
-    });
+    }, true);
 
     this.sendSettings()
     .then (() => {
@@ -57,7 +98,7 @@ export default class Isaac {
   // Timer loop, call every second
   tick () {
 
-    if (this.phase == "wait" || this.phase == "pause") return;
+    if (this.phase == "wait" || this.isPaused) return;
 
     if (this.time < 0) {
 
@@ -75,12 +116,47 @@ export default class Isaac {
       return;
     }
 
-    this.services.itmr.sendToGame({
-      m: 'addText',
-      d: new ITMRText('firstLine', `${this.text} ${this.time}${t('s', this.lang)}`, this.settings.textpos.l1)
-    });
+    if (this.phase == "defaultPoll")
+      this.text.secondline.setText(this.poll.getText());
+
+    this.updateText();
 
     this.time--;
+
+  }
+
+  // Call on message in chat
+  onMessage (msg) {
+    if (this.phase == "defaultPoll") {
+
+      // Check if this is vote for #1
+      if (
+        msg.text == "#1" ||
+        msg.text == "1" ||
+        msg.text.toUpperCase() == this.poll.variants[0].name.toUpperCase()
+      ) {
+        this.poll.voteFor(0, `${msg.source}${msg.userId}`);
+      }
+
+      // Or for #2
+      else if (
+        msg.text == "#2" ||
+        msg.text == "2" ||
+        msg.text.toUpperCase() == this.poll.variants[1].name.toUpperCase()
+      ) {
+        this.poll.voteFor(1, `${msg.source}${msg.userId}`);
+      }
+
+      // Maybe, for #3?
+      else if (
+        msg.text == "#3" ||
+        msg.text == "3" ||
+        msg.text.toUpperCase() == this.poll.variants[2].name.toUpperCase()
+      ) {
+        this.poll.voteFor(2, `${msg.source}${msg.userId}`);
+      }
+
+    }
 
   }
 
@@ -88,17 +164,8 @@ export default class Isaac {
   changePhase () {
     if (this.phase == "gameSetupDone" || this.phase == "delay") {
 
-      this.services.itmr.sendToGame({
-        m: 'removeText',
-        d: {name: 'firstLine'}
-      });
-
-      this.services.itmr.sendToGame({
-        m: 'removeText',
-        d: {name: 'secondLine'}
-      });
-
       this.time = this.settings.timings.vote;
+      this.text.firstline.removeBlink();
       this.setRandomPolling();
 
     }
@@ -106,9 +173,39 @@ export default class Isaac {
 
       this.phase = "delay"
       this.time = this.settings.timings.delay;
-      this.text = t('pollResult', this.lang);
+      this.text.firstline.setBlink(255,255,255);
+
+      let winner = this.poll.getWinner();
+
+      switch (this.action) {
+
+        case "giveItem":
+          this.text.firstline.setText(`${t('pollGiveResult', this.lang)} ${winner.name}`);
+          this.services.itmr.sendToGame({
+            m: 'itemAction',
+            d: {
+              remove: false,
+              item: winner.id
+            }
+          }, true);
+          break;
+
+        case "removeItem":
+          this.text.firstline.setText(`${t('pollRemoveResult', this.lang)} ${winner.name}`);
+          this.services.itmr.sendToGame({
+            m: 'itemAction',
+            d: {
+              remove: true,
+              item: winner.id
+            }
+          }, true);
+          break;
+
+      }
 
     }
+
+    //this.updateText();
   }
 
   // Select random polling
@@ -130,54 +227,39 @@ export default class Isaac {
     })
     .then (res => {
       playerItems = res.out;
-      console.log(playerItems);
-      this.state = "defaultPoll";
+      this.phase = "defaultPoll";
 
       // Remove item with 28% chance and if player have more than 3 items
       if (Math.random() < .28 && playerItems.length > 3) {
 
         // Set poll state
         this.action = "removeItem";
-        this.text = t('selectItemForRemove', this.lang);
         
         // Set firstline text
-        this.services.itmr.sendToGame({
-          m: 'addText',
-          d: new ITMRText(
-            'firstLine',
-            `${this.text} ${this.time}${t('s', this.lang)}`, this.settings.textpos.l1
-          )
-        });
+        this.text.firstline.setText(`${t('selectItemForRemove', this.lang)}`);
 
-        // Select three items for removing and get names
-        let itemsToRemove = getRandomElementsFromArr(this.lists.items, 3).map(itemId => {
-          return this.getItemById(this.lists.items, itemId);
-        });
+        // Select three items for removing and getting names
+        let itemsToRemove = getRandomElementsFromArr(playerItems, 3)
+          .map(itemId => {
+            return this.getItemById(this.lists.items, itemId);
+          });
 
         // Create new default poll
         this.poll = new DefaultPoll(this, itemsToRemove);
 
-        // Set second line text
-        this.services.itmr.sendToGame({
-          m: 'addText',
-          d: new ITMRText('secondLine', this.poll.getText(), this.settings.textpos.l2)
-        });
+        // Set secondline text
+        this.text['secondline'].setText(this.poll.getText());
   
       }
 
       // Give item with 72% chance
       else {
 
-        this.text = t('selectItem', this.lang);
+        // Set poll state
+        this.action = "giveItem";
 
         // Set firstline text
-        this.services.itmr.sendToGame({
-          m: 'addText',
-          d: new ITMRText(
-            'firstLine',
-            `${this.text} ${this.time}${t('s', this.lang)}`, this.settings.textpos.l1
-          )
-        });
+        this.text.firstline.setText(`${t('selectItem', this.lang)}`);
 
         // Remove collected items from variants
         let currentItemPool = this.lists.items.filter(item => {
@@ -188,15 +270,10 @@ export default class Isaac {
         this.poll = new DefaultPoll(this, getRandomElementsFromArr(currentItemPool, 3));
 
         // Set second line text
-        this.services.itmr.sendToGame({
-          m: 'addText',
-          d: new ITMRText('secondLine', this.poll.getText(), this.settings.textpos.l2)
-        });
+        this.text['secondline'].setText(this.poll.getText());
 
       }
     })
-
-
     
 
   }
@@ -223,9 +300,49 @@ export default class Isaac {
         subtime: this.settings.subtime,
         lang: this.lang
       }
-    });
+    }, true);
 
   }
+
+  // Send textlines to game
+  updateText () {
+
+    let textForUpdate = [];
+    
+    // Update firstline text
+    if (this.text.firstline)
+      this.text['firstline'].setPostfix(`(${this.time}${t('s', this.lang)})`);
+
+    if (!this.text.firstline.equals(this.previousText.firstline)) {
+
+      let prepared = this.text.firstline.prepare();
+      this.previousText.firstline = prepared;
+
+      textForUpdate.push(prepared);
+
+    }
+
+
+    // Update secondline text
+    if (!this.text.secondline.equals(this.previousText.secondline)) {
+
+      let prepared = this.text.secondline.prepare();
+      this.previousText.secondline = prepared;
+
+      textForUpdate.push(prepared);
+
+    }
+
+    if (textForUpdate.length > 0) {
+      this.services.itmr.sendToGame({
+        m: 'addText',
+        d: textForUpdate
+      });
+    }
+
+  }
+
+    
 
   // Load all items, trinkets and events from game
   loadData () {
@@ -359,7 +476,7 @@ export default class Isaac {
     // Load items from mod
     this.services.itmr.sendToGame({
       m: 'getItems'
-    })
+    }, true)
     .then (res => {
       
       this.lists.items.push(...res.out.active);

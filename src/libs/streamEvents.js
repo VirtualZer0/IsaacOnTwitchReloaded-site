@@ -1,9 +1,10 @@
 export class TextMessage {
 
-  constructor(userId, userName, text) {
+  constructor(userId, userName, text, source) {
     this.userId = userId;
     this.userName = userName;
-    this.text = text;
+    this.text = text.trim();
+    this.source = source;
   }
 
 }

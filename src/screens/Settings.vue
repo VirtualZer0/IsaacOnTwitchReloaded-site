@@ -74,8 +74,8 @@ export default {
         },
 
         textpos: {
-          l1: {X: 16, Y: 215},
-          l2: {X: 16, Y: 235}
+          l1: {X: 16, Y: 205},
+          l2: {X: 16, Y: 220}
         },
 
         subtime: 10*60*30

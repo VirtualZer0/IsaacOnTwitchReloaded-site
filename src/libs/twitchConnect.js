@@ -118,7 +118,8 @@ export default class TwitchConnect {
       this._signal('onMessage', new TextMessage(
         parsed.tags["user-id"],
         parsed.tags["display-name"],
-        parsed.message
+        parsed.message,
+        'tw'
       ));
     }
   }

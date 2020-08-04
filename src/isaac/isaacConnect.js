@@ -73,12 +73,12 @@ export default class IsaacConnect {
       if (res.out == 'success') {
         this._log('Game connected');
         // Launch checking game output for two-way connection
-        this.checkOutputTimer = setInterval(this.checkOutput, 750);
+        this.checkOutputTimer = setInterval(this.checkOutput, 850);
 
         // Show text for player
         this.sendToGame({
           m: 'addText',
-          d: new ITMRText('gameConnected', t('gameConnected', this.lang))
+          d: [new ITMRText('gameConnected', t('gameConnected', this.lang)).prepare()]
         })
 
         this._signal('onConnect');
@@ -87,7 +87,8 @@ export default class IsaacConnect {
   }
 
   // Send data to game
-  sendToGame (data, repeat = false) {
+  // High priority request repeats more times (10) than normal (3)
+  sendToGame (data, high = false, repeat = 0) {
 
     return new Promise((resolve, reject) => {
       fetch('http://localhost:666', {
@@ -97,11 +98,24 @@ export default class IsaacConnect {
       .then (res => res.json())
       .then(res => resolve(res))
       .catch(err => {
-        if (!repeat) {
-          this.msgManager.failed(data);
-          reject(err);
+
+        if (repeat < 3 && !high) {
+          this.msgManager.failed(data, repeat, false);
         }
-      })
+        else if (repeat < 10 && high) {
+          this.msgManager.failed(data, 0, true);
+        }
+        else if (repeat >= 10 & high) {
+          this._log('Connection to Isaac is broken', 'error');
+          this._log(err, 'error');
+        }
+        else if (repeat >= 3 && !high) {
+          this._log('Connection to Isaac possible broken', 'warn')
+          this._log(err, 'warn');
+        }
+
+        reject (err);
+      });
     });
     
   }
@@ -148,22 +162,17 @@ export default class IsaacConnect {
 
 }
 
-// Retry requests on fail (only one time)
+// Retry requests on fail
 class MessageManager {
 
   constructor () {
-    this.sendDataCallback = (msg, repeat) => {}
+    this.sendDataCallback = (msg, high = false, repeat = 0) => {}
   }
 
-  send (method, data) {
-    let msg = {m: method, d: data};
-    this.sendDataCallback(msg);
-  }
-
-  failed (msg) {
+  failed (msg, repeat, high) {
     setTimeout(() => {
-      this.sendDataCallback(msg, true);
-    }, 500);
+      this.sendDataCallback(msg, high, repeat ++);
+    }, 500 + (repeat * 100));
   }
 
 }

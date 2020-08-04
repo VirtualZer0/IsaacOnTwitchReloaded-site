@@ -13,24 +13,26 @@ export default class DefaultPoll {
   voteFor (num, user) {
 
     // If "Russian hackers" event is active
-    if (this.Isaac.special.russianHackers.enabled) {
-      num = this.Isaac.special.russianHackers.shuffle[num-1];
+    if (this.Isaac.special.russinaHackers.enabled) {
+      num = this.Isaac.special.russinaHackers.shuffle[num];
     }
 
+    // If user already voted
     if (this.users[user] && num != this.users[user]) {
 
       // Remove previous user vote
-      this.votes[this.users[user]-1] --;
+      this.votes[this.users[user]] --;
 
       // Add new vote
-      this.votes[num-1] ++;
+      this.votes[num] ++;
 
       // Write new vote
       this.users[user] = num;
 
     }
+
     else if (!this.users[user]) {
-      this.votes[num-1] ++;
+      this.votes[num] ++;
       this.users[user] = num;
       this.allVotesCount ++;
     }
@@ -40,11 +42,15 @@ export default class DefaultPoll {
     return this.variants[this.votes.indexOf(Math.max(...this.votes))];
   }
 
+  getPercents (variant) {
+    return this.allVotesCount == 0 ? 0 : Math.round(this.votes[variant]/this.allVotesCount*100);
+  }
+
   getText () {
 
-    let text = `#1 ${this.variants[0].name} - ${Math.round(this.votes[0]/this.allVotesCount*100)} `;
-    text += `#2 ${this.variants[1].name} - ${Math.round(this.votes[1]/this.allVotesCount*100)} `;
-    text += `#3 ${this.variants[2].name} - ${Math.round(this.votes[2]/this.allVotesCount*100)} `;
+    let text = `#1 ${this.variants[0].name} - ${this.getPercents(0)}%  `;
+    text += `#2 ${this.variants[1].name} - ${this.getPercents(1)}%  `;
+    text += `#3 ${this.variants[2].name} - ${this.getPercents(2)}%`;
 
     return text;
 

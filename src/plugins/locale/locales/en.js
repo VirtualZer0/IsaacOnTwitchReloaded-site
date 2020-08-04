@@ -63,10 +63,11 @@ export default {
     "no": "No",
 
     "gameConnected": "Now enter Twitch and/or YouTube info on site",
-    "gameSetupDone": "Nice! New vote will start in",
+    "gameSetupDone": "Nice! New vote will start coming soon",
     "selectItemForRemove": "Select an item to remove",
     "selectItem": "Select item",
-    "pollResult": "You got",
+    "pollGiveResult": "You got",
+    "pollRemoveResult": "You lost",
 
     "money": "Money",
     "bomb": "Bomb",
