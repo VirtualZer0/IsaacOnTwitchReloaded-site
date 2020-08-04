@@ -16,7 +16,7 @@ export default class IsaacConnect {
     this.msgManager = new MessageManager();
     this.msgManager.sendDataCallback = (msg, repeat) => this.sendToGame(msg, repeat)
 
-    this.port = 666;
+    this.port = port;
     this.lang = lang;
     this.handlers = {};
 
@@ -30,7 +30,7 @@ export default class IsaacConnect {
 
   // Search active game server
   search () {
-    fetch('http://localhost:666', {
+    fetch(`http://localhost:${this.port}`, {
       method: 'POST',
       body: `||{"m":"ping"}||\n`
     })
@@ -48,7 +48,7 @@ export default class IsaacConnect {
   // Test requests
   testConnect () {
     setInterval(() => {
-      fetch('http://localhost:666', {
+      fetch(`http://localhost:${this.port}`, {
         method: 'POST',
         body: `||{"m":"ping"}||\n`
       })
@@ -91,7 +91,7 @@ export default class IsaacConnect {
   sendToGame (data, high = false, repeat = 0) {
 
     return new Promise((resolve, reject) => {
-      fetch('http://localhost:666', {
+      fetch(`http://localhost:${this.port}`, {
         method: 'POST',
         body: `||${JSON.stringify(data)}||\n`
       })
@@ -122,7 +122,7 @@ export default class IsaacConnect {
 
   // Request output data from game
   checkOutput () {
-    fetch('http://localhost:666', {
+    fetch(`http://localhost:${this.port}`, {
       method: 'POST',
       body: `||{"m":"out"}||\n`
     })
