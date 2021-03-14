@@ -2,6 +2,10 @@ import {TextMessage, DonateMessage, Subscriber} from './streamEvents';
 
 export default class YoutubeConnect {
 
+  /**
+   * Create new chat object for Youtube
+   * @param {String} streamURLString - URL for YouTube stream
+   */
   constructor (streamURLString) {
 
     this.apikey = "AIzaSyCULdGwd1OoBvvgGB7Ajc4J7x47gKl2Y0s";
@@ -38,7 +42,7 @@ export default class YoutubeConnect {
       this.chatId = res.items[0].liveStreamingDetails.activeLiveChatId;
       this._updateChat();
       this.updTimer = setInterval(this._updateChat.bind(this), 3000);
-      
+
       this._log("Connected to " + this.chatId);
     })
     .catch (err => {

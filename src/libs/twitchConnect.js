@@ -2,11 +2,15 @@ import {TextMessage, DonateMessage, Subscriber, Follower} from './streamEvents';
 
 export default class TwitchConnect {
 
+  /**
+   * Create new chat object for Twitch
+   * @param {String} channel - Streamer nickname
+   */
   constructor (channel) {
     this.channel = channel;
     this.userId = null;
 
-    this.apikey = "vtr91vw1dzji7piypq7r13itr6is2i";
+    this.apikey = "vtr91vw1dzji7piypq7r13itr6is2i"; // API Key for Twitch API. Not very secret information
     this.botname = "justinfan666";
     this.server = "irc-ws.chat.twitch.tv";
     this.port = 80;
@@ -28,6 +32,9 @@ export default class TwitchConnect {
     }
   }
 
+  /**
+   * Connect to Twitch chat using websockets
+   */
   connect () {
     this.webSocket = new WebSocket('ws://' + this.server + ':' + this.port + '/', 'irc');
 
@@ -37,6 +44,10 @@ export default class TwitchConnect {
     this.webSocket.onopen = this.onOpen.bind(this);
   }
 
+  /**
+   * Lauching request for checking new followers.
+   * Not working, because requires backend implementation
+   */
   startCheckNewFollowers () {
     this.checkFollowersFrom = Date.now();
 
@@ -49,10 +60,17 @@ export default class TwitchConnect {
     }).bind(this), 500);
   }
 
+  /**
+   * Disable followers checking
+   */
   stopCheckNewFollowers () {
     clearInterval(this.updFollowersTimer);
   }
 
+  /**
+   * Calling whem new message received
+   * @param {String} msg - Raw message from Twitch
+   */
   onMessage(msg) {
     // Ignore incorrect messages
     if (msg == null) return;
@@ -124,11 +142,18 @@ export default class TwitchConnect {
     }
   }
 
+  /**
+   * Called on error with websocket
+   * @param {String} msg
+   */
   onError (msg) {
     this._signal('onError', msg);
     this._log("Error: " + msg);
   }
 
+  /**
+   * Called on disconnect from websocket
+   */
   onClose () {
     if (this.plannedDisconnect) {
       this._signal('onDisconnect');
@@ -136,10 +161,13 @@ export default class TwitchConnect {
     else {
       this.connect();
     }
-    
+
     this._log("Disconnect from websocket");
   }
 
+  /**
+   * Called when connection with chat established
+   */
   onOpen () {
     if (this.webSocket !== null && this.webSocket.readyState === 1) {
       this._log("Connected to websocket");
@@ -152,6 +180,9 @@ export default class TwitchConnect {
     }
   }
 
+  /**
+   * Close current connection with Twitch chat
+   */
   close () {
     this.plannedDisconnect = true;
     if(this.webSocket){

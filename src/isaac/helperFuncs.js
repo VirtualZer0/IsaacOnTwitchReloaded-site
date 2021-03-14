@@ -1,3 +1,8 @@
+/**
+ * Return N random elements from array
+ * @param {Array} arr - Array for random selection
+ * @param {Number} n - Count of random elements
+ */
 export function getRandomElementsFromArr (arr, n) {
   let result = new Array(n),
       len = arr.length,
@@ -12,6 +17,10 @@ export function getRandomElementsFromArr (arr, n) {
   return result;
 }
 
+/**
+ * Return random element from array based on weight
+ * @param {Array} arr - Array of objects with weight field
+ */
 export function weightedRandom(arr) {
   let i, sum = 0, r = Math.random();
   for (i in arr) {

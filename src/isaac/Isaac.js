@@ -21,33 +21,46 @@ export default class Isaac {
     this.gamemode = gamemode;       // Current gamemode
 
     this.lists = {};                // All items, trinkets, events, etc.
+    this.streamEventsQueue = {      // Queue for stream events, like bits and subscribers
+      bits: [],                     // Bits and superchat array
+      subs: [],                     // Subscribers and followers array
+    }
 
     this.timer = null;              // Main setInterval id
+
     this.time = 5;                  // Current time in seconds
     this.phase = 'gameSetupDone';   // Current phase
     this.action = null;             // Current polling action (removeItem, giveTrinket, etc.)
 
+    this.storedState = {            // State storage, for saving it when interruption appear (like subscribe)
+      time: null,
+      phase: null,
+      action: null
+    }
+
     this.text = {                   // Current text lines
-      firstline: null,
-      secondline: null
+      firstline: null,              // First line
+      secondline: null              // Second line
     }
 
     this.previousText = {           // Previous text lines. Needed for optimize requests count
-      firstline: null,
-      secondline: null
+      firstline: null,              // First line
+      secondline: null              // Second line
     }
 
     this.isPaused = false;
 
     this.poll = null;               // Current poll object
+
     this.special = {                // Special parameters
       russinaHackers: {             // Parameters for Russian hackers event
-        enabled: false,
-        shuffle: []
+        enabled: false,             // Status of event
+        shuffle: []                 // Voting order
       }
     }
 
     this.colors = {                 // Colors storage
+      red: {r: 1, g: 0, b: 0, a: 1},
       yellow: {r: 1, g: 215/255, b: 0, a: 1}
     }
 
@@ -60,6 +73,11 @@ export default class Isaac {
     if (this.services.youtube) {
       this.services.youtube.events.onMessage = this.onMessage.bind(this);
     }
+
+    // Add game state handlers
+    this.services.itmr.addHandler('changeGameState', ({paused}) => {
+      this.isPaused = paused;
+    });
   }
 
   // Launch Isaac on Twitch
@@ -79,7 +97,7 @@ export default class Isaac {
       '',
       this.settings.textpos.l2,
     );
-    
+
     this.text['firstline'].setPostfix(`(${this.time}${t('s', this.lang)})`);
 
     // Remove previous text
@@ -92,7 +110,7 @@ export default class Isaac {
     .then (() => {
       this.loadData();
     });
-    
+
   }
 
   // Timer loop, call every second
@@ -162,6 +180,8 @@ export default class Isaac {
 
   // When time is 0, switch to new phase, based on previously phase
   changePhase () {
+
+    // If it's gameSetupDone or delay, launch next random poll
     if (this.phase == "gameSetupDone" || this.phase == "delay") {
 
       this.time = this.settings.timings.vote;
@@ -234,7 +254,7 @@ export default class Isaac {
 
         // Set poll state
         this.action = "removeItem";
-        
+
         // Set firstline text
         this.text.firstline.setText(`${t('selectItemForRemove', this.lang)}`);
 
@@ -249,7 +269,7 @@ export default class Isaac {
 
         // Set secondline text
         this.text['secondline'].setText(this.poll.getText());
-  
+
       }
 
       // Give item with 72% chance
@@ -274,7 +294,7 @@ export default class Isaac {
 
       }
     })
-    
+
 
   }
 
@@ -308,7 +328,7 @@ export default class Isaac {
   updateText () {
 
     let textForUpdate = [];
-    
+
     // Update firstline text
     if (this.text.firstline)
       this.text['firstline'].setPostfix(`(${this.time}${t('s', this.lang)})`);
@@ -342,7 +362,7 @@ export default class Isaac {
 
   }
 
-    
+
 
   // Load all items, trinkets and events from game
   loadData () {
@@ -478,7 +498,7 @@ export default class Isaac {
       m: 'getItems'
     }, true)
     .then (res => {
-      
+
       this.lists.items.push(...res.out.active);
       this.lists.items.push(...res.out.passive);
       this.lists.items.push(...res.out.familiars);

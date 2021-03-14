@@ -1,3 +1,6 @@
+/**
+ * Basic text message from Twitch or Youtube chat
+ */
 export class TextMessage {
 
   constructor(userId, userName, text, source) {
@@ -9,6 +12,10 @@ export class TextMessage {
 
 }
 
+/**
+ * Bits message for Twitch
+ * Superchat message for Youtube
+ */
 export class DonateMessage {
   constructor (userId, userName, amount, source) {
     this.userId = userId;
@@ -18,6 +25,10 @@ export class DonateMessage {
   }
 }
 
+/**
+ * New subscriber on Twitch
+ * New sponsor on YouTube
+ */
 export class Subscriber {
   constructor (userId, userName, source) {
     this.userId = userId;
@@ -26,6 +37,10 @@ export class Subscriber {
   }
 }
 
+/**
+ * New followers
+ * Currently not using
+ */
 export class Follower {
   constructor (userId, userName, source) {
     this.userId = userId;

@@ -1,3 +1,6 @@
+/**
+ * Contains all streamers with uniqie trinkets
+ */
 export default [
 
   {

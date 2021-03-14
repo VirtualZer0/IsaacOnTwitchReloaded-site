@@ -1,7 +1,7 @@
 <template>
   <div class="settingsScreen">
     <h1>{{"settings" | t($store.state.locale)}}</h1>
-    
+
     <div class="panel-container">
       <div class="panel">
         <h2>{{"timings" | t($store.state.locale)}}</h2>
@@ -15,7 +15,7 @@
 
       <div class="panel">
         <h2>{{"chances" | t($store.state.locale)}}</h2>
-        
+
         <input-switcher v-model="settings.chances.events">{{"events" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.chances.items">{{"items" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.chances.trinkets">{{"trinkets" | t($store.state.locale)}}</input-switcher>
@@ -25,7 +25,7 @@
 
       <div class="panel">
         <h2>{{"subsandbits" | t($store.state.locale)}}</h2>
-        
+
         <input-switcher v-model="settings.subsAndBits.subs" :isBool="true">{{"subs" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.subsAndBits.bits" :isBool="true">{{"bits" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.subsAndBits.superchat" :isBool="true">{{"superchat" | t($store.state.locale)}}</input-switcher>
@@ -35,8 +35,8 @@
 
     </div>
 
-    <big-button @onClick="saveAndExit()">{{"back" | t($store.state.locale)}}</big-button>
-    <big-button @onClick="$router.push('/gamemode')">{{"next" | t($store.state.locale)}}</big-button>
+    <big-button @onClick="save(); $router.go(-1);">{{"back" | t($store.state.locale)}}</big-button>
+    <big-button @onClick="save(); $router.push('/gamemode');">{{"next" | t($store.state.locale)}}</big-button>
 
   </div>
 </template>
@@ -84,7 +84,7 @@ export default {
   },
 
   methods: {
-    saveAndExit () {
+    save () {
       this.$store.commit('setSettings', this.settings);
     }
   },

@@ -3,23 +3,29 @@ import t from '../plugins/locale/translateFunction'
 
 export default class IsaacConnect {
 
-  constructor (port = 666, lang = "en") {
+  constructor (port = 8666, lang = "en") {
+    // Requests count
     this.stats = {
-      success: 0,
-      errors: 0
+      success: 0, // Success requests (including successful attempts)
+      errors: 0   // Failed requests
     }
 
+    // Event handlers
     this.events = {
       onConnect: () => {}
     }
 
+    // Game channel
     this.msgManager = new MessageManager();
     this.msgManager.sendDataCallback = (msg, repeat) => this.sendToGame(msg, repeat)
 
-    this.port = port;
-    this.lang = lang;
+    this.port = port; // Game port
+    this.lang = lang; // Localization
+
+    // Game to site handlers
     this.handlers = {};
 
+    // Timers
     this.checkOutputTimer = null;
     this.searchServerTimer = setInterval(this.search.bind(this), 1000);
 
@@ -28,7 +34,9 @@ export default class IsaacConnect {
     this._log('Search game server...')
   }
 
-  // Search active game server
+  /**
+   * Search active game server
+   */
   search () {
     fetch(`http://localhost:${this.port}`, {
       method: 'POST',
@@ -45,7 +53,9 @@ export default class IsaacConnect {
     .catch (err => {})
   }
 
-  // Test requests
+  /**
+   * Test requests
+   */
   testConnect () {
     setInterval(() => {
       fetch(`http://localhost:${this.port}`, {
@@ -64,7 +74,9 @@ export default class IsaacConnect {
     }, 250)
   }
 
-  // Connect method
+  /**
+   * Send connect request to game server
+   */
   connect () {
     this.sendToGame({
       m: 'connect'
@@ -72,8 +84,9 @@ export default class IsaacConnect {
     .then (res => {
       if (res.out == 'success') {
         this._log('Game connected');
+
         // Launch checking game output for two-way connection
-        this.checkOutputTimer = setInterval(this.checkOutput, 850);
+        this.checkOutputTimer = setInterval(() => this.checkOutput(), 850);
 
         // Show text for player
         this.sendToGame({
@@ -81,13 +94,17 @@ export default class IsaacConnect {
           d: [new ITMRText('gameConnected', t('gameConnected', this.lang)).prepare()]
         })
 
-        this._signal('onConnect');
       }
     })
   }
 
-  // Send data to game
-  // High priority request repeats more times (10) than normal (3)
+
+  /**
+   * Send data to game server
+   * @param {Object} data - Data for sending to game
+   * @param {Boolean} high - If high = true, resend data more times if request failed
+   * @param {Number} repeat - Current attempt number
+   */
   sendToGame (data, high = false, repeat = 0) {
 
     return new Promise((resolve, reject) => {
@@ -117,10 +134,12 @@ export default class IsaacConnect {
         reject (err);
       });
     });
-    
+
   }
 
-  // Request output data from game
+  /**
+   * Request output data from game
+   */
   checkOutput () {
     fetch(`http://localhost:${this.port}`, {
       method: 'POST',
@@ -128,6 +147,7 @@ export default class IsaacConnect {
     })
     .then (res => res.json())
     .then (res => {
+      console.log(res);
       res.out.forEach(com => {
         if (this.handlers[com.c]) {
           this.handlers[com.c](com.d);
@@ -139,36 +159,60 @@ export default class IsaacConnect {
     })
   }
 
-  // Add handler
+  /**
+   * Add handler for request
+   * @param {String} name - Value from field output.c in checkOutput method
+   * @param {Function} func - Function that is triggered when a command is received
+   */
   addHandler (name, func) {
     this.handlers[name] = func;
   }
 
-  // Remove handler
+ /**
+ * Remove existing handler
+ * @param {String} name - Value from field output.c in checkOutput method
+ */
   removeHandler (name) {
     delete this.handlers[name];
-  } 
+  }
 
-  _signal (name, data = null) {
+  /**
+   * Using inside this class for calling callbacks for events
+   * @param {String} name - Event name
+   * @param {Object} data - Data from event
+   */
+  _signal(name, data = null) {
     if (this.events[name]) {
       this.events[name](data);
     }
   }
 
-  // Log to console with style
+  /**
+   * Log to console with style
+   * @param {String} msg - Message for console
+   * @param {String} type - Log function: log, warning or error
+   */
   _log (msg, type = 'log') {
     console[type]('%cITMR%c ' + msg, this.consoleStyle, '');
   }
 
 }
 
-// Retry requests on fail
+/**
+ * Helps retry requests on failure
+ */
 class MessageManager {
 
   constructor () {
     this.sendDataCallback = (msg, high = false, repeat = 0) => {}
   }
 
+  /**
+   * Send message again after small timeout
+   * @param {*} msg - Original message
+   * @param {*} repeat - Current attempt
+   * @param {*} high - Priority
+   */
   failed (msg, repeat, high) {
     setTimeout(() => {
       this.sendDataCallback(msg, high, repeat ++);
