@@ -1,4 +1,5 @@
 module.exports = {
+  publicPath: '/',
   pwa: {
     name: 'Isaac Twitch Mod',
     themeColor: '#6441A4',
