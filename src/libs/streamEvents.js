@@ -3,6 +3,13 @@
  */
 export class TextMessage {
 
+  /**
+   *
+   * @param {Number|String} userId - Unique user id
+   * @param {String} userName - Displayed user name
+   * @param {String} text - Message text
+   * @param {String} source - Source of message, "yt" for YouTube, "tw" fro Twitch
+   */
   constructor(userId, userName, text, source) {
     this.userId = userId;
     this.userName = userName;

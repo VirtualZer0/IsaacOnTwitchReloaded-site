@@ -1,5 +1,19 @@
+import ITMRColor from "./ITMRColor";
+import ITMRVector from "./ITMRVector";
+
 export default class ITMRText {
 
+  /**
+   * Create new Text for Isaac On Twitch Mod
+   * @param {String} name - Text id
+   * @param {String} value - Text value
+   * @param {ITMRVector} pos - Text position
+   * @param {ITMRColor} color - Text color
+   * @param {ITMRColor} blink - Text blink color
+   * @param {Number} size - Text size
+   * @param {Boolean} isCenter - Set text to center
+   * @param {String} postfix - Text postfix, added to the end of text
+   */
   constructor (name, value, pos = null, color = null, blink = null, size = null, isCenter = null, postfix = null) {
 
     this.name = name;
@@ -13,49 +27,73 @@ export default class ITMRText {
 
   }
 
-  setPos (x, y) {
-    this.pos = {X: x, Y: y}
+  /**
+   * Change text position
+   * @param {ITMRVector} vector - Vector with new position
+   */
+  setPos (vector) {
+    this.pos = vector
   }
 
+  /**
+   * Change text value
+   * @param {String} text - New text value
+   */
   setText (text) {
     this.value = text;
   }
 
+  /**
+   * Change text postfix
+   * @param {String} postfix - New text postfix
+   */
   setPostfix (postfix) {
     this.postfix = postfix;
   }
 
-  setColor (r, g, b, a = 1) {
-    this.color = {
-      r: r/255,
-      g: g/255,
-      b: b/255,
-      a
-    }
+  /**
+   * Change text color
+   * @param {ITMRColor|null} color - Text color
+   */
+  setColor (color) {
+    this.color = color
   }
 
-  setBlink (r, g, b, a = 1) {
-    this.blink = {
-      r: r/255,
-      g: g/255,
-      b: b/255,
-      a
-    }
+  /**
+   * Change text blink color
+   * @param {ITMRColor|null} color - Blink color
+   */
+  setBlink (color) {
+    this.blink = color
   }
 
+  /**
+   * Remove text blinking
+   */
   removeBlink () {
     this.blink = null;
   }
 
+  /**
+   * Change text size
+   * @param {Number} size - New text size
+   */
   setSize (size) {
     this.size = size;
   }
 
+  /**
+   * Change text centering
+   * @param {Boolean} center - Set text to center
+   */
   setCenter (center) {
-    this.center = center;
+    this.isCenter = center;
   }
 
-  // Return only not null fields for decreasing data size
+  /**
+   * Return only not null fields for decreasing data size
+   * @returns {Object}
+   */
   prepare () {
 
     let obj = {};
@@ -70,6 +108,11 @@ export default class ITMRText {
     return obj;
   }
 
+  /**
+   * Check if two texts is equals
+   * @param {ITMRText} text - Text for checking
+   * @returns {Boolean}
+   */
   equals (text) {
 
     if (text == null) return false;
@@ -81,6 +124,7 @@ export default class ITMRText {
       curText?.color == text?.color &&
       curText?.blink == text?.blink &&
       curText?.size == text?.size &&
+      curText?.postfix == text?.postfix &&
       curText?.isCenter == text?.isCenter;
 
   }

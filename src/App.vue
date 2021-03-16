@@ -1,10 +1,8 @@
 <template>
   <div id="app">
-    
+
     <header>
-      <router-link to="#">
-        <div class="logo" :style="`background-image: url('${getImgUrl('logo')}')`"></div>
-      </router-link>
+      <div class="logo" :style="`background-image: url('${getImgUrl('logo')}')`"></div>
     </header>
 
     <main>

@@ -36,7 +36,7 @@ export default {
       youtubeUrl: ""
     }
   },
-  
+
   computed: {
     local () {
       return this.$root.local;
@@ -52,7 +52,7 @@ export default {
       if (this.twitchChannel != '') {
         this.$services.twitch = new TwitchConnect(this.twitchChannel);
         this.$services.twitch.connect();
-        this.$services.twitch.startCheckNewFollowers();
+        //this.$services.twitch.startCheckNewFollowers();
       }
 
       if (this.youtubeUrl != '') {

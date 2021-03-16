@@ -64,10 +64,13 @@ export default {
 
     "gameConnected": "Now enter Twitch and/or YouTube info on site",
     "gameSetupDone": "Nice! New vote will start coming soon",
+    "awaitngData": "Data exchange...",
     "selectItemForRemove": "Select an item to remove",
     "selectItem": "Select item",
     "pollGiveResult": "You got",
     "pollRemoveResult": "You lost",
+    "selectEvent": "Select event",
+    "selectedEvent": "Event",
 
     "money": "Money",
     "bomb": "Bomb",
@@ -99,8 +102,8 @@ export default {
     "blueFlies": "Blue Flies",
     "prettyFly": "Pretty Fly",
 
-    
-    
+
+
 
   }
 }

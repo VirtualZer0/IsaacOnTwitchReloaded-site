@@ -86,13 +86,22 @@ export default class IsaacConnect {
         this._log('Game connected');
 
         // Launch checking game output for two-way connection
-        this.checkOutputTimer = setInterval(() => this.checkOutput(), 850);
+        //this.checkOutputTimer = setInterval(() => this.checkOutput(), 1000);
 
-        // Show text for player
+        // Clear text
         this.sendToGame({
-          m: 'addText',
-          d: [new ITMRText('gameConnected', t('gameConnected', this.lang)).prepare()]
+          m: 'clearText'
+        }, true)
+        .then(() => {
+          // Show text for player
+          this.sendToGame({
+            m: 'addText',
+            d: [new ITMRText('gameConnected', t('gameConnected', this.lang)).prepare()]
+          })
         })
+
+        // Call event onConnect
+        this._signal('onConnect');
 
       }
     })
@@ -147,7 +156,6 @@ export default class IsaacConnect {
     })
     .then (res => res.json())
     .then (res => {
-      console.log(res);
       res.out.forEach(com => {
         if (this.handlers[com.c]) {
           this.handlers[com.c](com.d);

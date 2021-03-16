@@ -1,7 +1,7 @@
 <template>
   <div class="communityScreen">
     <h1>{{"community" | t($store.state.locale)}}</h1>
-    
+
     <div class="two-container">
 
       <div class="left">
@@ -24,7 +24,7 @@
 
       <div class="right">
         <div class="title">Discord</div>
-        <iframe class="discord-widget" src="https://discordapp.com/widget?id=738348582557581376&theme=dark" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+        <iframe style="margin: 0 auto" src="https://discord.com/widget?id=738348582557581376&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
       </div>
 
     </div>

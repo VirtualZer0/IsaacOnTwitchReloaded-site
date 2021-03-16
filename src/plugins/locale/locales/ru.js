@@ -64,10 +64,13 @@ export default {
 
     "gameConnected": "Теперь введите данные для Twich и/или YouTube на сайте",
     "gameSetupDone": "Отлично! Голосование сейчас начнется",
+    "awaitngData": "Обмен данными...",
     "selectItemForRemove": "Выберите предмет для удаления",
     "selectItem": "Выберите предмет",
     "pollGiveResult": "Вы получили",
     "pollRemoveResult": "Вы потеряли",
+    "selectEvent": "Выберите событие",
+    "selectedEvent": "Выбрано событие",
 
     "money": "Деньги",
     "bomb": "Бомба",
