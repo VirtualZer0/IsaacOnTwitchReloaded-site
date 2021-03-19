@@ -21,6 +21,7 @@ export default {
     "bits": "Битсы",
     "superchat": "Суперчат",
     "followers": "Фолловеры",
+    "hideVotes": "Скрыть голоса",
     "save": "Сохранить",
     "back": "Назад",
     "next": "Далее",
@@ -62,7 +63,7 @@ export default {
     "yes": "Да",
     "no": "Нет",
 
-    "gameConnected": "Теперь введите данные для Twich и/или YouTube на сайте",
+    "gameConnected": "Теперь введите данные для Twitch и/или YouTube на сайте",
     "gameSetupDone": "Отлично! Голосование сейчас начнется",
     "awaitngData": "Обмен данными...",
     "selectItemForRemove": "Выберите предмет для удаления",

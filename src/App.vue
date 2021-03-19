@@ -46,12 +46,13 @@ body {
   text-decoration: none;
   image-rendering: pixelated;
   overflow-x: hidden;
-  font-size: calc(14px + (26 - 14) * ((100vw - 300px) / (1600 - 300)));
-  line-height: calc(1.3em + (1.5 - 1.2) * ((100vw - 300px)/(1600 - 300)));
+  font-size: calc(14px + (26 - 14) * ((100vmax - 300px) / (1600 - 300)));
+  line-height: calc(1.3em + (1.5 - 1.2) * ((100vmax - 300px)/(1600 - 300)));
+  padding-bottom: 40px;
 }
 
 #app {
-  min-height: 100vh;
+  min-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
 }
@@ -66,11 +67,12 @@ main {
 }
 
 h1 {
-  font-size: 1.4em;
+  font-size: 42px;
+  margin-bottom: 28px;
 }
 
 h2 {
-  font-size: 1.2em;
+  font-size: 28px;
 }
 
 .credits {
@@ -99,6 +101,7 @@ a {
 .logo {
   margin: 0 auto;
   margin-bottom: 16px;
+  min-width: 320px;
   width: auto;
   height: 16vh;
   max-width: 40vw;
@@ -122,11 +125,11 @@ a {
 .panel {
   min-width: 300px;
   min-height: 300px;
-  width: 20vw;
-  height: 20vw;
+  width: 22vw;
+  height: 22vw;
   background: url("./assets/img/cardBg.png") no-repeat;
   background-size: contain;
-  padding: 2vw;
+  padding: calc(1vw + 24px);
   margin-right: 3vw;
 
   h2 {

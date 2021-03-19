@@ -6,21 +6,23 @@ import t from '../../plugins/locale/translateFunction';
 import { TextMessage } from '../../libs/streamEvents';
 import BasicPoll from './BasicPoll';
 
+import { randString } from '../helperFuncs'
+
 /**
- * Default poll with 3 variants
+ * Poll with images in variants
  */
-export default class DefaultPoll extends BasicPoll {
+export default class GraphicPoll extends BasicPoll {
   /**
    * Create new poll with 3 variants
    * @param {Isaac} Isaac - Main game controller
    * @param {Number} pollTime - Time for current poll
    * @param {Number} delayTime - Time for delay after poll result
    */
-  constructor (Isaac, pollTime, delayTime) {
+  constructor(Isaac, pollTime, delayTime) {
     super(Isaac);
 
     /** Contains votes per variant @type {Array<Number>} */
-    this.votes = [0,0,0];
+    this.votes = [0, 0, 0];
 
     /** Contains all votes @type {Number} */
     this.allVotesCount = 0;
@@ -36,19 +38,61 @@ export default class DefaultPoll extends BasicPoll {
 
     /** Time for delay fter polling ends @type {Number} */
     this.delayTime = delayTime;
+
+    /** Need for sending pollframes @type {Boolean} */
+    this.isFirstUpdate = true;
+
+    /** Split second line on 3 parts @override @type {Array<ITMRText>} */
+    this.text.secondline = [
+      new ITMRText(
+        `p_${randString(8)}_s1`,
+        '',
+        Isaac.settings.textpos.l2,
+      ),
+
+      new ITMRText(
+        `p_${randString(8)}_s2`,
+        '',
+        { X: Isaac.settings.textpos.l2.X + 90, Y: Isaac.settings.textpos.l2.Y }
+      ),
+
+      new ITMRText(
+        `p_${randString(8)}_s3`,
+        '',
+        { X: Isaac.settings.textpos.l2.X + 180, Y: Isaac.settings.textpos.l2.Y }
+      ),
+    ]
   }
 
   /**
    * Update current poll state
    */
-  update () {
+  update() {
+
+    // Send pollframes data
+    if (this.isFirstUpdate) {
+      this.Isaac.services.itmr.sendToGame({
+        m: 'addPollframes',
+        d: {
+          f1: this.variants[0].gfx,
+          f2: this.variants[1].gfx,
+          f3: this.variants[2].gfx,
+        }
+      });
+
+      this.isFirstUpdate = false;
+    }
 
     if (!this.pollEnd) {
 
       if (this.pollTime > 0) {
         this.pollTime--;
         this.text.firstline?.setPostfix(` (${this.pollTime}${t('s', this.Isaac.lang)})`);
-        this.text.secondline?.setText(this.getPollText());
+
+        let pollTexts = this.getPollText();
+        for (let i = 0; i < pollTexts.length; i ++) {
+          this.text.secondline[i]?.setText(pollTexts[i]);
+        }
       }
       else {
         this.pollEnd = true;
@@ -66,10 +110,7 @@ export default class DefaultPoll extends BasicPoll {
 
         this.Isaac.services.itmr.sendToGame({
           m: 'removeText',
-          d: [
-            this.text.firstline.name,
-            this.text.secondline.name
-          ]
+          d: [ this.text.firstline.name ]
         })
 
         this.text.firstline = null;
@@ -86,7 +127,10 @@ export default class DefaultPoll extends BasicPoll {
     }
 
     if (!this.text.secondline != null) {
-      texts.push(this.text.secondline.prepare())
+      console.log(this.text.secondline);
+      this.text.secondline?.forEach(text => {
+        texts.push(text.prepare())
+      });
     }
 
     if (texts.length > 0) {
@@ -100,14 +144,29 @@ export default class DefaultPoll extends BasicPoll {
   /**
    * Called when poll end
    */
-  endPoll () {
+  endPoll() {
 
     // Requires custom implementation for every child class
     this.text.firstline.setBlink(Colors.white);
 
+    this.Isaac.services.itmr.sendToGame({
+      m: 'removePollframes'
+    });
+
+    this.Isaac.services.itmr.sendToGame({
+      m: 'removeText',
+      d: [
+        this.text.secondline[0].name,
+        this.text.secondline[1].name,
+        this.text.secondline[2].name
+      ]
+    })
+
+    this.text.secondline = null;
+
   }
 
-  handleMessaage (msg) {
+  handleMessaage(msg) {
     if (this.pollEnd) return;
 
     // Check if this is vote for #1
@@ -143,7 +202,7 @@ export default class DefaultPoll extends BasicPoll {
    * @param {Number} num - Variant number
    * @param {Number|String} user - Unique user id
    */
-  voteFor (num, user) {
+  voteFor(num, user) {
 
     // If "Russian hackers" event is active
     if (this.Isaac.special.russinaHackers.enabled) {
@@ -154,10 +213,10 @@ export default class DefaultPoll extends BasicPoll {
     if (this.users[user] && num != this.users[user]) {
       console.log(`Already voted: ${this.votes[this.users[user]]}`);
       // Remove previous user vote
-      this.votes[this.users[user]] --;
+      this.votes[this.users[user]]--;
 
       // Add new vote
-      this.votes[num] ++;
+      this.votes[num]++;
 
       // Write new vote
       this.users[user] = num;
@@ -165,9 +224,9 @@ export default class DefaultPoll extends BasicPoll {
     }
 
     else if (!this.users[user]) {
-      this.votes[num] ++;
+      this.votes[num]++;
       this.users[user] = num;
-      this.allVotesCount ++;
+      this.allVotesCount++;
     }
   }
 
@@ -175,7 +234,7 @@ export default class DefaultPoll extends BasicPoll {
    * Return winner from current poll
    * @returns {Object} Winner
    */
-  getWinner () {
+  getWinner() {
     return this.variants[this.votes.indexOf(Math.max(...this.votes))];
   }
 
@@ -184,25 +243,25 @@ export default class DefaultPoll extends BasicPoll {
    * @param {Number} variant - Selected variant
    * @returns {Number} Percents on selected variant
    */
-  getPercents (variant) {
+  getPercents(variant) {
     if (this.Isaac.settings.hideVotes) {
       return '-'
     }
 
-    return this.allVotesCount == 0 ? 0 : Math.round(this.votes[variant]/this.allVotesCount*100);
+    return this.allVotesCount == 0 ? 0 : Math.round(this.votes[variant] / this.allVotesCount * 100);
   }
 
   /**
    * Return poll text
-   * @returns {String} Poll text
+   * @returns {Array<String>} Poll text
    */
-  getPollText () {
+  getPollText() {
 
-    let text = `#1 ${this.variants[0].name} - ${this.getPercents(0)}%  `;
-    text += `#2 ${this.variants[1].name} - ${this.getPercents(1)}%  `;
-    text += `#3 ${this.variants[2].name} - ${this.getPercents(2)}%`;
-
-    return text;
+    return [
+      `#1            ${this.getPercents(0)}%`,
+      `#2            ${this.getPercents(1)}%`,
+      `#3            ${this.getPercents(2)}%`
+    ]
 
   }
 

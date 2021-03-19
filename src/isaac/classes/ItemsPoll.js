@@ -4,9 +4,9 @@ import Isaac from '../Isaac'
 
 import t from '../../plugins/locale/translateFunction';
 import { getRandomElementsFromArr } from '../helperFuncs'
-import DefaultPoll from './DefaultPoll';
+import GraphicPoll from './GraphicPoll';
 
-export default class ItemsPoll extends DefaultPoll {
+export default class ItemsPoll extends GraphicPoll {
   /**
    * Create new poll for items
    * @param {Isaac} Isaac - Main game controller
@@ -55,7 +55,7 @@ export default class ItemsPoll extends DefaultPoll {
       this.variants = itemsToRemove;
 
       // Set secondline text
-      this.text['secondline'].setText(this.getPollText());
+      //this.text['secondline'].setText(this.getPollText());
 
     }
 
@@ -77,7 +77,7 @@ export default class ItemsPoll extends DefaultPoll {
       this.variants = getRandomElementsFromArr(currentItemPool, 3)
 
       // Set second line text
-      this.text['secondline'].setText(this.getPollText());
+      //this.text['secondline'].setText(this.getPollText());
 
     }
 
@@ -87,13 +87,6 @@ export default class ItemsPoll extends DefaultPoll {
 
   endPoll() {
     super.endPoll();
-
-    this.Isaac.services.itmr.sendToGame({
-      m: 'removeText',
-      d: { name: this.text.secondline.name }
-    }, true);
-
-    this.text.secondline = null;
 
     let winner = this.getWinner();
 

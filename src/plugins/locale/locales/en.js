@@ -21,6 +21,7 @@ export default {
     "bits": "Bits",
     "superchat": "Superchat",
     "followers": "Followers",
+    "hideVotes": "Hide votes",
     "save": "Save",
     "back": "Back",
     "next": "Next",

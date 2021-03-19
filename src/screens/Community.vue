@@ -8,23 +8,23 @@
         <div class="title">Github</div>
 
         <div class="block">
-          <div>Mod:</div>
-          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded" target="_blank">Repository</a>
+          <div>{{"mod" | t($store.state.locale)}}:</div>
+          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded" target="_blank">{{"repo" | t($store.state.locale)}}</a>
           <span> | </span>
-          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded/issues/new/choose" target="_blank">Bug report</a>
+          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded/issues/new/choose" target="_blank">{{"bugReport" | t($store.state.locale)}}</a>
         </div>
 
         <div class="block">
-          <div>Site:</div>
-          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded-site" target="_blank">Repository</a>
+          <div>{{"site" | t($store.state.locale)}}:</div>
+          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded-site" target="_blank">{{"repo" | t($store.state.locale)}}</a>
           <span> | </span>
-          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded-site/issues/new/choose" target="_blank">Bug report</a>
+          <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded-site/issues/new/choose" target="_blank">{{"bugReport" | t($store.state.locale)}}</a>
         </div>
       </div>
 
       <div class="right">
         <div class="title">Discord</div>
-        <iframe style="margin: 0 auto" src="https://discord.com/widget?id=738348582557581376&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+        <iframe style="margin: 0 auto" src="https://discord.com/widget?id=738348582557581376&theme=dark" width="320" height="400" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
       </div>
 
     </div>
@@ -49,16 +49,20 @@ export default {
 
 .two-container {
   display: flex;
-  justify-content: space-evenly;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: flex-start;
 
   .left, .right {
     width: 35vw;
+    min-width: 320px;
     display: flex;
     justify-content: center;
     flex-direction: column;
+    margin-bottom: 20px;
 
     .title {
+      font-size: 24px;
       margin-bottom: 30px;
     }
   }
@@ -66,9 +70,11 @@ export default {
   .block {
     font-size: 1rem;
     display: flex;
+    flex-wrap: wrap;
     margin: 0 auto;
     justify-content: space-evenly;
     width: 60%;
+    margin-bottom: 10px;
   }
 
   a {
@@ -77,8 +83,7 @@ export default {
 }
 
 .discord-widget {
-  width: 75%;
-  min-height: 40vh;
+
   margin: 0 auto;
 }
 

@@ -56,7 +56,7 @@ export default {
 <style lang="scss">
 .input-switcher {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-bottom: 8px;
   text-align: left;
 
@@ -71,9 +71,9 @@ export default {
 
     .arrow-left {
       width: 0;
-      height: 0; 
+      height: 0;
       border-top: .4em solid transparent;
-      border-bottom: .4em solid transparent; 
+      border-bottom: .4em solid transparent;
       cursor: pointer;
       border-right: .4em solid #343434;
       margin-right: 12px;
@@ -86,9 +86,9 @@ export default {
 
     .arrow-right {
       width: 0;
-      height: 0; 
+      height: 0;
       border-top: .4em solid transparent;
-      border-bottom: .4em solid transparent; 
+      border-bottom: .4em solid transparent;
       cursor: pointer;
       border-left: .4em solid #343434;
       margin-left: 12px;
@@ -96,4 +96,3 @@ export default {
   }
 }
 </style>
-

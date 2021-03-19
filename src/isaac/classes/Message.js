@@ -47,19 +47,20 @@ export default class Message {
       this.time --;
     else {
 
+      let textsForRemove = []
+
       if (this.firstline) {
-        this.Isaac.services.itmr.sendToGame({
-          m: 'removeText',
-          d: {name: this.firstline.name}
-        });
+        textsForRemove.push(this.firstline.name)
       }
 
       if (this.secondline) {
-        this.Isaac.services.itmr.sendToGame({
-          m: 'removeText',
-          d: { name: this.secondline.name }
-        });
+        textsForRemove.push(this.secondline.name)
       }
+
+      this.Isaac.services.itmr.sendToGame({
+        m: 'removeText',
+        d: textsForRemove
+      });
 
       this.Isaac.runNextAction();
     }

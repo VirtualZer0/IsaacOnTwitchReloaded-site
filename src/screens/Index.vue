@@ -30,6 +30,7 @@
 
 <script>
 import MenuItem from '../components/MenuItem.vue';
+import mobile from 'is-mobile';
 
 export default {
   name: 'IndexScreen',
@@ -39,12 +40,7 @@ export default {
 
   computed: {
     isMobile () {
-      if( window.innerWidth <= 760 ) {
-          return true;
-      }
-      else {
-          return false;
-      }
+      return mobile()
     }
   }
 }

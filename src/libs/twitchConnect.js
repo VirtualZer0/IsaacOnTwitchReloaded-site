@@ -36,7 +36,13 @@ export default class TwitchConnect {
    * Connect to Twitch chat using websockets
    */
   connect () {
-    this.webSocket = new WebSocket('ws://' + this.server + ':' + this.port + '/', 'irc');
+    if (window.location.protocol.includes('https')) {
+      this.webSocket = new WebSocket('wss://' + this.server + ':' + this.port + '/', 'irc');
+    }
+    else {
+      this.webSocket = new WebSocket('ws://' + this.server + ':' + this.port + '/', 'irc');
+    }
+
 
     this.webSocket.onmessage = this.onMessage.bind(this);
     this.webSocket.onerror = this.onError.bind(this);
@@ -148,7 +154,8 @@ export default class TwitchConnect {
    */
   onError (msg) {
     this._signal('onError', msg);
-    this._log("Error: " + msg);
+    this._log("Error: ");
+    console.log(msg);
   }
 
   /**

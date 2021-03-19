@@ -126,10 +126,10 @@ export default class IsaacConnect {
       .catch(err => {
 
         if (repeat < 3 && !high) {
-          this.msgManager.failed(data, repeat, false);
+          return this.sendToGame(data, high, repeat + 1)
         }
         else if (repeat < 10 && high) {
-          this.msgManager.failed(data, 0, true);
+          return this.sendToGame(data, high, repeat + 1)
         }
         else if (repeat >= 10 & high) {
           this._log('Connection to Isaac is broken', 'error');

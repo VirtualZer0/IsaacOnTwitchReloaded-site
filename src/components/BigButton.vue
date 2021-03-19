@@ -26,11 +26,11 @@ export default {
   background-image: url("../assets/img/buttonBg.png");
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: left;
+  background-position: center;
 
   padding: 25px;
   min-width: 100px;
-  min-height: 45px;
+  min-height: 30px;
   font-size: 2rem;
 
   cursor: pointer;
@@ -42,4 +42,3 @@ export default {
   transform: scale(1.1);
 }
 </style>
-

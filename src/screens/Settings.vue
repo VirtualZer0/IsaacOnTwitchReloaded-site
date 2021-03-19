@@ -24,12 +24,12 @@
       </div>
 
       <div class="panel">
-        <h2>{{"subsandbits" | t($store.state.locale)}}</h2>
+        <h2>{{"other" | t($store.state.locale)}}</h2>
 
         <input-switcher v-model="settings.subsAndBits.subs" :isBool="true">{{"subs" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.subsAndBits.bits" :isBool="true">{{"bits" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.subsAndBits.superchat" :isBool="true">{{"superchat" | t($store.state.locale)}}</input-switcher>
-        <!--<input-switcher v-model="settings.subsAndBits.follows" :isBool="true">{{"followers" | t($store.state.locale)}}</input-switcher>-->
+        <input-switcher v-model="settings.hideVotes" :isBool="true">{{"hideVotes" | t($store.state.locale)}}</input-switcher>
 
       </div>
 
@@ -73,9 +73,11 @@ export default {
           follows: false
         },
 
+        hideVotes: false,
+
         textpos: {
-          l1: {X: 16, Y: 205},
-          l2: {X: 16, Y: 220}
+          l1: {X: 16, Y: 200},
+          l2: {X: 16, Y: 225}
         },
 
         subtime: 10*60*30

@@ -93,31 +93,14 @@ export default class Isaac {
     // Remove previous text
     this.services.itmr.sendToGame({
       m: 'removeText',
-      d: {name: 'gameConnected'}
+      d: ['gameConnected']
     }, true);
-
-    // Set text about data exchange
-    this.services.itmr.sendToGame({
-      m: 'addText',
-      d: new ITMRText(
-        'awaitingData',
-        `${t('awitingData', this.lang)}`,
-        this.settings.textpos.l1,
-        Colors.yellow
-      ).prepare()
-    });
 
     // Exchange startup data
     this.sendSettings()
     .then (() => {
       this.loadData()
       .then(() => {
-
-        // Remove data exchange text
-        this.services.itmr.sendToGame({
-          m: 'removeText',
-          d: { name: 'awaitingData' }
-        }, true);
 
         // Create message about starting poll
         this.currentAction = new Message(
@@ -151,10 +134,7 @@ export default class Isaac {
   prepareNextAction() {
 
 
-    this.nextAction =
-    Math.random() > .5 ?
-      new EventsPoll(this, this.settings.timings.vote, this.settings.timings.delay,)
-      : new ItemsPoll(this, this.settings.timings.vote, this.settings.timings.delay, this.lists.items);
+    this.nextAction = new ItemsPoll(this, this.settings.timings.vote, this.settings.timings.delay, this.lists.items);
 
     this.nextAction?.prepare();
 
@@ -326,6 +306,8 @@ export default class Isaac {
       this.lists.items.push(...res.out.familiars);
       this.lists.trinkets.push(...res.out.trinkets);
       this.lists.events.push(...res.out.events);
+
+      console.log(this.lists.items);
 
     });
   }
