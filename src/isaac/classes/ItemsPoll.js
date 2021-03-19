@@ -54,9 +54,6 @@ export default class ItemsPoll extends GraphicPoll {
       // Set poll variants
       this.variants = itemsToRemove;
 
-      // Set secondline text
-      //this.text['secondline'].setText(this.getPollText());
-
     }
 
     // Give item with 72% chance
@@ -75,9 +72,6 @@ export default class ItemsPoll extends GraphicPoll {
 
       // Set poll variants
       this.variants = getRandomElementsFromArr(currentItemPool, 3)
-
-      // Set second line text
-      //this.text['secondline'].setText(this.getPollText());
 
     }
 

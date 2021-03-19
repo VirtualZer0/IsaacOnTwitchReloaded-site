@@ -72,6 +72,7 @@ export default {
     "pollRemoveResult": "You lost",
     "selectEvent": "Select event",
     "selectedEvent": "Event",
+    "selectTrinket": "Select trinket",
 
     "money": "Money",
     "bomb": "Bomb",
