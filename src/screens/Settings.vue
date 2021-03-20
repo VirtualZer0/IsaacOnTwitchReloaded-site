@@ -76,8 +76,8 @@ export default {
         hideVotes: false,
 
         textpos: {
-          l1: {X: 16, Y: 200},
-          l2: {X: 16, Y: 225}
+          l1: {X: 16, Y: 190},
+          l2: {X: 16, Y: 215}
         },
 
         subtime: 10*60*30

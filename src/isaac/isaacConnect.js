@@ -15,10 +15,6 @@ export default class IsaacConnect {
       onConnect: () => {}
     }
 
-    // Game channel
-    this.msgManager = new MessageManager();
-    this.msgManager.sendDataCallback = (msg, repeat) => this.sendToGame(msg, repeat)
-
     this.port = port; // Game port
     this.lang = lang; // Localization
 
@@ -88,6 +84,12 @@ export default class IsaacConnect {
         // Launch checking game output for two-way connection
         //this.checkOutputTimer = setInterval(() => this.checkOutput(), 1000);
 
+        // Remove pollframes
+        this.sendToGame({ m: 'removePollframes' });
+
+        // Remove progress bar
+        this.sendToGame({ m: 'removeProgressBar' });
+
         // Clear text
         this.sendToGame({
           m: 'clearText'
@@ -117,29 +119,12 @@ export default class IsaacConnect {
   sendToGame (data, high = false, repeat = 0) {
 
     return new Promise((resolve, reject) => {
-      fetch(`http://localhost:${this.port}`, {
-        method: 'POST',
-        body: `||${JSON.stringify(data)}||\n`
-      })
+      this._send(data)
       .then (res => res.json())
       .then(res => resolve(res))
       .catch(err => {
-
-        if (repeat < 3 && !high) {
-          return this.sendToGame(data, high, repeat + 1)
-        }
-        else if (repeat < 10 && high) {
-          return this.sendToGame(data, high, repeat + 1)
-        }
-        else if (repeat >= 10 & high) {
-          this._log('Connection to Isaac is broken', 'error');
-          this._log(err, 'error');
-        }
-        else if (repeat >= 3 && !high) {
-          this._log('Connection to Isaac possible broken', 'warn')
-          this._log(err, 'warn');
-        }
-
+        this._log('Connection to Isaac is broken', 'error')
+        console.error(err);
         reject (err);
       });
     });
@@ -204,27 +189,21 @@ export default class IsaacConnect {
     console[type]('%cITMR%c ' + msg, this.consoleStyle, '');
   }
 
-}
-
-/**
- * Helps retry requests on failure
- */
-class MessageManager {
-
-  constructor () {
-    this.sendDataCallback = (msg, high = false, repeat = 0) => {}
-  }
-
   /**
-   * Send message again after small timeout
-   * @param {*} msg - Original message
-   * @param {*} repeat - Current attempt
-   * @param {*} high - Priority
+   *
+   * @param {Object} data - Data for sending
+   * @param {Number} repeat - Current attempt
+   * @param {Boolean} high - TRUE, if data has high priority
    */
-  failed (msg, repeat, high) {
-    setTimeout(() => {
-      this.sendDataCallback(msg, high, repeat ++);
-    }, 500 + (repeat * 100));
+  _send (data, repeat = 1, high = false) {
+    return fetch(`http://localhost:${this.port}`, {
+      method: 'POST',
+      body: `||${JSON.stringify(data)}||\n`
+    }).catch(function (error) {
+      if (repeat > 3 && !high) throw error;
+      if (repeat > 6 && high) throw error;
+      return this._send(data, repeat, high + 1);
+    }.bind(this));
   }
 
 }

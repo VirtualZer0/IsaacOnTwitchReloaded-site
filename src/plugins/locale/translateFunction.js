@@ -3,9 +3,15 @@ import l_Ru from './locales/ru';
 
 export default function t (val, locale) {
   if (locale == "ru") {
-    return l_Ru.strings[val];
+    if (l_Ru.strings[val])
+      return l_Ru.strings[val];
+    else
+      return `!${val}!`;
   }
   else {
-    return l_En.strings[val];
+    if (l_En.strings[val])
+      return l_En.strings[val];
+    else
+      return `!${val}!`;
   }
 }

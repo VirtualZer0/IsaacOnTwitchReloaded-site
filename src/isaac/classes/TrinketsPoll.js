@@ -10,17 +10,16 @@ export default class TrinketsPoll extends GraphicPoll {
   /**
    * Create new poll for trinkets
    * @param {Isaac} Isaac - Main game controller
-   * @param {Array} allTrinkets - All game trinkets
    */
-  constructor (Isaac, pollTime, delayTime, allTrinkets) {
+  constructor (Isaac, pollTime, delayTime) {
 
     super(Isaac, pollTime, delayTime);
 
     /** Contains all trinkets in game @type {Array<Object>} */
-    this.trinkets = allTrinkets;
+    this.trinkets = Isaac.lists.trinkets;
 
     // Set firstline text
-    this.text.firstline.setText(`${t('selectTrinket', this.Isaac.lang)}`);
+    this.text.firstline.setText(t('selectTrinket', this.Isaac.lang));
 
     // Select three trinkets
     this.variants = getRandomElementsFromArr(this.trinkets, 3);

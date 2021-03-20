@@ -10,14 +10,13 @@ export default class ItemsPoll extends GraphicPoll {
   /**
    * Create new poll for items
    * @param {Isaac} Isaac - Main game controller
-   * @param {Array} allItems - All game items
    */
-  constructor (Isaac, pollTime, delayTime, allItems) {
+  constructor (Isaac, pollTime, delayTime) {
 
     super(Isaac, pollTime, delayTime);
 
     /** Contains all items in game @type {Array<Object>} */
-    this.items = allItems;
+    this.items = this.Isaac.lists.items;
 
     /** Contains poll type - give item or remove it @type {String} */
     this.action = '';
@@ -43,7 +42,7 @@ export default class ItemsPoll extends GraphicPoll {
       this.action = "removeItem";
 
       // Set firstline text
-      this.text.firstline.setText(`${t('selectItemForRemove', this.Isaac.lang)}`);
+      this.text.firstline.setText(t('selectItemForRemove', this.Isaac.lang));
 
       // Select three items for removing and getting names
       let itemsToRemove = getRandomElementsFromArr(playerItems, 3)
@@ -63,7 +62,7 @@ export default class ItemsPoll extends GraphicPoll {
       this.action = "giveItem";
 
       // Set firstline text
-      this.text.firstline.setText(`${t('selectItem', this.Isaac.lang)}`);
+      this.text.firstline.setText(t('selectItem', this.Isaac.lang));
 
       // Remove collected items from variants
       let currentItemPool = this.items.filter(item => {

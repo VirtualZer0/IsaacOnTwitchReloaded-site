@@ -14,7 +14,7 @@ export default class ITMRText {
    * @param {Boolean} isCenter - Set text to center
    * @param {String} postfix - Text postfix, added to the end of text
    */
-  constructor (name, value, pos = null, color = null, blink = null, size = null, isCenter = null, postfix = null) {
+  constructor (name, value, pos = null, color = null, blink = null, size = null, isCenter = null, postfix = null, prefix = null) {
 
     this.name = name;
     this.value = value;
@@ -24,6 +24,7 @@ export default class ITMRText {
     this.size = size;
     this.isCenter = isCenter;
     this.postfix = postfix;
+    this.prefix = prefix;
 
   }
 
@@ -49,6 +50,14 @@ export default class ITMRText {
    */
   setPostfix (postfix) {
     this.postfix = postfix;
+  }
+
+  /**
+   * Change text prefix
+   * @param {String} prefix - New text prefix
+   */
+  setPrefix(prefix) {
+    this.prefix = prefix;
   }
 
   /**
@@ -99,6 +108,7 @@ export default class ITMRText {
     let obj = {};
     obj['name'] = this.name;
     obj['value'] = this.postfix ? `${this.value} ${this.postfix}` : this.value;
+    obj['value'] = this.prefix ? `${this.prefix} ${obj['value']}` : obj['value'];
     if (this.pos) obj['pos'] = this.pos;
     if (this.color) obj['color'] = this.color;
     if (this.blink) obj['blink'] = this.blink;
@@ -125,6 +135,7 @@ export default class ITMRText {
       curText?.blink == text?.blink &&
       curText?.size == text?.size &&
       curText?.postfix == text?.postfix &&
+      curText?.prefix == text?.prefix &&
       curText?.isCenter == text?.isCenter;
 
   }

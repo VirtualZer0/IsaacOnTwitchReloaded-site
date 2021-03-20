@@ -46,9 +46,9 @@ export default class DefaultPoll extends BasicPoll {
     if (!this.pollEnd) {
 
       if (this.pollTime > 0) {
-        this.pollTime--;
         this.text.firstline?.setPostfix(` (${this.pollTime}${t('s', this.Isaac.lang)})`);
         this.text.secondline?.setText(this.getPollText());
+        this.pollTime--;
       }
       else {
         this.pollEnd = true;
@@ -81,11 +81,11 @@ export default class DefaultPoll extends BasicPoll {
 
     let texts = []
 
-    if (!this.text.firstline != null) {
+    if (this.text.firstline && this.text.firstline.prepare) {
       texts.push(this.text.firstline.prepare())
     }
 
-    if (!this.text.secondline != null) {
+    if (this.text.secondline && this.text.secondline.prepare) {
       texts.push(this.text.secondline.prepare())
     }
 
@@ -104,6 +104,7 @@ export default class DefaultPoll extends BasicPoll {
 
     // Requires custom implementation for every child class
     this.text.firstline.setBlink(Colors.white);
+    this.text.firstline?.setPostfix(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
 
   }
 
@@ -146,13 +147,13 @@ export default class DefaultPoll extends BasicPoll {
   voteFor (num, user) {
 
     // If "Russian hackers" event is active
-    if (this.Isaac.special.russinaHackers.enabled) {
-      num = this.Isaac.special.russinaHackers.shuffle[num];
+    if (this.Isaac.specialTriggers.triggers.russianHackers.enabled) {
+      num = this.Isaac.specialTriggers.triggers.russianHackers.shuffle[num];
     }
 
     // If user already voted
-    if (this.users[user] && num != this.users[user]) {
-      console.log(`Already voted: ${this.votes[this.users[user]]}`);
+    if (typeof this.users[user] !== 'undefined' && num != this.users[user]) {
+
       // Remove previous user vote
       this.votes[this.users[user]] --;
 
@@ -164,7 +165,7 @@ export default class DefaultPoll extends BasicPoll {
 
     }
 
-    else if (!this.users[user]) {
+    else if (typeof this.users[user] === 'undefined') {
       this.votes[num] ++;
       this.users[user] = num;
       this.allVotesCount ++;

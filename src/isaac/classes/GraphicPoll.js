@@ -122,12 +122,11 @@ export default class GraphicPoll extends BasicPoll {
 
     let texts = []
 
-    if (!this.text.firstline != null) {
+    if (this.text.firstline && this.text.firstline.prepare) {
       texts.push(this.text.firstline.prepare())
     }
 
-    if (!this.text.secondline != null) {
-      console.log(this.text.secondline);
+    if (this.text.secondline) {
       this.text.secondline?.forEach(text => {
         texts.push(text.prepare())
       });
@@ -205,13 +204,13 @@ export default class GraphicPoll extends BasicPoll {
   voteFor(num, user) {
 
     // If "Russian hackers" event is active
-    if (this.Isaac.special.russinaHackers.enabled) {
-      num = this.Isaac.special.russinaHackers.shuffle[num];
+    if (this.Isaac.specialTriggers.triggers.russianHackers.enabled) {
+      num = this.Isaac.specialTriggers.triggers.russianHackers.shuffle[num];
     }
 
     // If user already voted
-    if (this.users[user] && num != this.users[user]) {
-      console.log(`Already voted: ${this.votes[this.users[user]]}`);
+    if (typeof this.users[user] !== 'undefined' && num != this.users[user]) {
+
       // Remove previous user vote
       this.votes[this.users[user]]--;
 
@@ -223,7 +222,7 @@ export default class GraphicPoll extends BasicPoll {
 
     }
 
-    else if (!this.users[user]) {
+    else if (typeof this.users[user] === 'undefined') {
       this.votes[num]++;
       this.users[user] = num;
       this.allVotesCount++;

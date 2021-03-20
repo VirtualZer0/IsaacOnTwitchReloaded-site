@@ -4,7 +4,7 @@ import {ITMR_GAMEMODES} from './enums/Gamemodes'
 
 import ITMRText from './models/ITMRText'
 
-import {getRandomElementsFromArr} from './helperFuncs'
+import {getRandomElementsFromArr, weightedRandom} from './helperFuncs'
 
 import streamers from './data/streamers'
 
@@ -15,7 +15,10 @@ import IsaacConnect from './isaacConnect'
 import BasicPoll from './classes/BasicPoll'
 import ItemsPoll from './classes/ItemsPoll'
 import EventsPoll from './classes/EventsPoll';
+import TrinketsPoll from './classes/TrinketsPoll';
 import Message from './classes/Message'
+import SpecialTriggers from './classes/SpecialTriggers';
+import PocketsPoll from './classes/PocketsPoll';
 
 /**
  * Main game controller
@@ -49,26 +52,22 @@ export default class Isaac {
     /** Main setInterval id @type {Number} */
     this.timer = null;
 
+    // ------------ Actions seciotn ------------ //
+
     /** Active poll or text object @type {BasicPoll|Message} */
     this.currentAction = null;
 
     /** Next poll or text object @type {BasicPoll|Message} */
     this.nextAction = null;
 
-    /** Interrupted poll or text object @type {BasicPoll|Message} */
-    this.freezedAction = null;
+    /** Interrupted poll or text object @type {Array<BasicPoll|Message>} */
+    this.freezedActions = [];
+
+    /** Contains special handlers for polling modification @type {SepcialTriggers} */
+    this.specialTriggers = new SpecialTriggers();
 
     /** Game state @type {Boolean} */
     this.isPaused = false;
-
-
-    /** Special conditions, like Russian Hacker event @type {Object} */
-    this.special = {                // Special parameters
-      russinaHackers: {             // Parameters for Russian hackers event
-        enabled: false,             // Status of event
-        shuffle: []                 // Voting order
-      }
-    }
 
     // Bind events for Twitch
     if (this.services.twitch) {
@@ -132,9 +131,34 @@ export default class Isaac {
   }
 
   prepareNextAction() {
+    this.specialTriggers.stopAll();
+
+    // Select poll based on weights
+    let selectedPoll = weightedRandom([
+      { name: 'event', weight: this.settings.chances.events },
+      { name: 'item', weight: this.settings.chances.items },
+      { name: 'trinket', weight: this.settings.chances.trinkets },
+      { name: 'other', weight: this.settings.chances.other },
+    ]);
 
 
-    this.nextAction = new ItemsPoll(this, this.settings.timings.vote, this.settings.timings.delay, this.lists.items);
+    switch (selectedPoll.name) {
+      case 'event':
+        this.nextAction = new EventsPoll(this, this.settings.timings.vote, this.settings.timings.delay);
+        break;
+
+      case 'item':
+        this.nextAction = new ItemsPoll(this, this.settings.timings.vote, this.settings.timings.delay);
+        break;
+
+      case 'trinket':
+        this.nextAction = new TrinketsPoll(this, this.settings.timings.vote, this.settings.timings.delay);
+        break;
+
+      case 'other':
+        this.nextAction = new PocketsPoll(this, this.settings.timings.vote, this.settings.timings.delay);
+        break;
+    }
 
     this.nextAction?.prepare();
 
@@ -143,14 +167,13 @@ export default class Isaac {
   runNextAction() {
     this.currentAction = this.nextAction;
     this.nextAction = null;
+    this.currentAction.text.firstline?.setPrefix(this.specialTriggers.getFirstlineModifier());
   }
 
   // Give gift for available streamers
   giveGift () {
 
   }
-
-
 
   // Send settings to game
   sendSettings () {
@@ -173,126 +196,6 @@ export default class Isaac {
       items: [],
       trinkets: [],
       events: [],
-
-      pickups: [
-        'money', 'bomb', 'key', 'battery', 'pill', 'card', 'rune', 'sack', 'bits'
-      ],
-
-      hearts: [
-        {cost: 0, variants: [
-          'nothing'
-        ]},
-
-        {cost: 20, variants: [
-          'halfRed', 'halfSoul'
-        ]},
-
-        {cost: 40, variants: [
-          'red', 'soul'
-        ]},
-
-        {cost: 60, variants: [
-          'black', 'blended', 'eternal', 'doubleRed', 'twitch'
-        ]},
-
-        {cost: 80, variants: [
-          'golden', 'container', 'bone'
-        ]},
-
-        {cost: 100, variants: [
-          'rainbow'
-        ]}
-      ],
-
-      companions: [
-        {cost: 0, variants: [
-          'redFlies'
-        ]},
-
-        {cost: 25, variants: [
-          'redSpiders'
-        ]},
-
-        {cost: 50, variants: [
-          'blueSpiders'
-        ]},
-
-        {cost: 75, variants: [
-          'blueFlies'
-        ]},
-
-        {cost: 100, variants: [
-          'prettyFly'
-        ]}
-      ],
-
-      moneys: [
-        {cost: 0, variants: [
-          '-5'
-        ]},
-
-        {cost: 25, variants: [
-          '-2'
-        ]},
-
-        {cost: 50, variants: [
-          '0'
-        ]},
-
-        {cost: 75, variants: [
-          '+2'
-        ]},
-
-        {cost: 100, variants: [
-          '+5'
-        ]},
-      ],
-
-      keys: [
-        {cost: 0, variants: [
-          '-3'
-        ]},
-
-        {cost: 25, variants: [
-          '-1'
-        ]},
-
-        {cost: 50, variants: [
-          '0'
-        ]},
-
-        {cost: 75, variants: [
-          '+1'
-        ]},
-
-        {cost: 100, variants: [
-          '+3'
-        ]},
-      ],
-
-      bombs: [
-        {cost: 0, variants: [
-          '-3'
-        ]},
-
-        {cost: 25, variants: [
-          '-1'
-        ]},
-
-        {cost: 50, variants: [
-          '0'
-        ]},
-
-        {cost: 75, variants: [
-          '+1'
-        ]},
-
-        {cost: 100, variants: [
-          '+3'
-        ]},
-      ],
-
-
     }
 
     // Load items from mod
@@ -307,7 +210,7 @@ export default class Isaac {
       this.lists.trinkets.push(...res.out.trinkets);
       this.lists.events.push(...res.out.events);
 
-      console.log(this.lists.items);
+      console.log(res.out);
 
     });
   }
