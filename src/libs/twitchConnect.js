@@ -13,7 +13,6 @@ export default class TwitchConnect {
     this.apikey = "vtr91vw1dzji7piypq7r13itr6is2i"; // API Key for Twitch API. Not very secret information
     this.botname = "justinfan666";
     this.server = "irc-ws.chat.twitch.tv";
-    this.port = 80;
 
     this.consoleStyle = 'background-color: #6441A4; color: #FFFFFF; border-radius: 100px;padding: 1px 4px;';
 
@@ -37,10 +36,10 @@ export default class TwitchConnect {
    */
   connect () {
     if (window.location.protocol.includes('https')) {
-      this.webSocket = new WebSocket('wss://' + this.server + ':' + this.port + '/', 'irc');
+      this.webSocket = new WebSocket('wss://' + this.server + ':443/', 'irc');
     }
     else {
-      this.webSocket = new WebSocket('ws://' + this.server + ':' + this.port + '/', 'irc');
+      this.webSocket = new WebSocket('ws://' + this.server + ':80/', 'irc');
     }
 
 

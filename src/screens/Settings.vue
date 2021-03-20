@@ -63,7 +63,8 @@ export default {
           events: 7,
           items: 7,
           trinkets: 2,
-          other: 1
+          other: 1,
+          removeItems: .4
         },
 
         subsAndBits: {

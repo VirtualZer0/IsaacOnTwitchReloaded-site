@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     locale: 'en',
+    twitchName: '',
 
     settings: {
 
@@ -18,7 +19,8 @@ export default new Vuex.Store({
         events: 7,
         items: 7,
         trinkets: 2,
-        other: 1
+        other: 1,
+        removeItems: .4
       },
 
       subsAndBits: {
