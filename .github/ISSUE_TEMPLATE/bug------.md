@@ -1,7 +1,7 @@
 ---
 name: Bug | Баг
 about: I have a problem with site | У меня проблема c сайтом
-title: "[BUG]"
+title: "[BUG] Short bug title | Заголовок бага"
 labels: bug
 assignees: ''
 

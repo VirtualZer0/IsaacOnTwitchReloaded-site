@@ -1,7 +1,7 @@
 ---
 name: Feature | Функционал
 about: I have ideas for a site | У меня есть идеи для сайта
-title: "[FEATURE]"
+title: "[FEATURE] Short feature title | Заголовок функционала"
 labels: enhancement
 assignees: ''
 
