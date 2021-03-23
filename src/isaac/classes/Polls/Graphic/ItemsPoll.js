@@ -1,10 +1,10 @@
-import Colors from '../enums/Colors';
-import ITMRText from '../models/ITMRText'
-import Isaac from '../Isaac'
+import Colors from '../../../enums/Colors';
+import ITMRText from '../../../models/ITMRText'
+import Isaac from '../../../Isaac'
 
-import t from '../../plugins/locale/translateFunction';
-import { getRandomElementsFromArr } from '../helperFuncs'
-import GraphicPoll from './GraphicPoll';
+import t from '../../../../plugins/locale/translateFunction';
+import { getRandomElementsFromArr } from '../../../helperFuncs'
+import GraphicPoll from '../Base/GraphicPoll';
 
 export default class ItemsPoll extends GraphicPoll {
   /**
@@ -35,8 +35,8 @@ export default class ItemsPoll extends GraphicPoll {
 
   setReady (playerItems) {
 
-    // Remove item with 28% chance and if player have more than 3 items
-    if (Math.random() < .28 && playerItems.length > 3) {
+    // Remove item with setting chance and only if player have more than 3 items
+    if (Math.random() < this.Isaac.settings.chances.removeItems/10 && playerItems.length > 3) {
 
       // Set poll state
       this.action = "removeItem";
@@ -64,9 +64,9 @@ export default class ItemsPoll extends GraphicPoll {
       // Set firstline text
       this.text.firstline.setText(t('selectItem', this.Isaac.lang));
 
-      // Remove collected items from variants
+      // Remove collected and special items from variants
       let currentItemPool = this.items.filter(item => {
-        return playerItems.findIndex(playerItem => playerItem == item.id)
+        return playerItems.findIndex(playerItem => playerItem == item.id) && !item.special
       });
 
       // Set poll variants

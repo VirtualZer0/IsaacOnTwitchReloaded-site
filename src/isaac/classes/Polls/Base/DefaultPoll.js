@@ -1,10 +1,10 @@
-import Colors from '../enums/Colors';
-import ITMRText from '../models/ITMRText'
-import Isaac from '../Isaac'
+import Colors from '../../../enums/Colors';
+import ITMRText from '../../../models/ITMRText'
+import Isaac from '../../../Isaac'
 
-import t from '../../plugins/locale/translateFunction';
-import { TextMessage } from '../../libs/streamEvents';
-import BasicPoll from './BasicPoll';
+import t from '../../../../plugins/locale/translateFunction';
+import { TextMessage } from '../../../../libs/streamEvents';
+import BasicPoll from '../Base/BasicPoll';
 
 /**
  * Default poll with 3 variants
@@ -42,13 +42,16 @@ export default class DefaultPoll extends BasicPoll {
    * Update current poll state
    */
   update () {
+    super.update();
 
     if (!this.pollEnd) {
 
       if (this.pollTime > 0) {
-        this.text.firstline?.setPostfix(` (${this.pollTime}${t('s', this.Isaac.lang)})`);
-        this.text.secondline?.setText(this.getPollText());
-        this.pollTime--;
+        this.text.firstline.setPostfix?.(` (${this.pollTime}${t('s', this.Isaac.lang)})`);
+        this.text.secondline.setText?.(this.getPollText());
+
+        if (!this.Isaac.isPaused)
+          this.pollTime--;
       }
       else {
         this.pollEnd = true;
@@ -59,8 +62,10 @@ export default class DefaultPoll extends BasicPoll {
     }
     else {
       if (this.delayTime > 0) {
-        this.delayTime--;
-        this.text.firstline?.setPostfix(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
+        if (!this.Isaac.isPaused)
+          this.delayTime--;
+
+        this.text.firstline.setPostfix?.(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
       }
       else {
 
@@ -104,10 +109,15 @@ export default class DefaultPoll extends BasicPoll {
 
     // Requires custom implementation for every child class
     this.text.firstline.setBlink(Colors.white);
-    this.text.firstline?.setPostfix(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
+    this.text.firstline.setPostfix?.(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
 
   }
 
+  /**
+   *
+   * @param {TextMessage} msg - Message from the chat
+   * @returns {Boolean} Show this message in chat
+   */
   handleMessaage (msg) {
     if (this.pollEnd) return;
 
@@ -118,6 +128,7 @@ export default class DefaultPoll extends BasicPoll {
       msg.text.toUpperCase() == this.variants[0].name.toUpperCase()
     ) {
       this.voteFor(0, `${msg.source}${msg.userId}`);
+      return false;
     }
 
     // Or for #2
@@ -127,6 +138,7 @@ export default class DefaultPoll extends BasicPoll {
       msg.text.toUpperCase() == this.variants[1].name.toUpperCase()
     ) {
       this.voteFor(1, `${msg.source}${msg.userId}`);
+      return false;
     }
 
     // Maybe, for #3?
@@ -136,7 +148,10 @@ export default class DefaultPoll extends BasicPoll {
       msg.text.toUpperCase() == this.variants[2].name.toUpperCase()
     ) {
       this.voteFor(2, `${msg.source}${msg.userId}`);
+      return false;
     }
+
+    return true;
   }
 
   /**
@@ -145,6 +160,7 @@ export default class DefaultPoll extends BasicPoll {
    * @param {Number|String} user - Unique user id
    */
   voteFor (num, user) {
+    if (this.pollEnd) return;
 
     // If "Russian hackers" event is active
     if (this.Isaac.specialTriggers.triggers.russianHackers.enabled) {
@@ -205,6 +221,14 @@ export default class DefaultPoll extends BasicPoll {
 
     return text;
 
+  }
+
+  freeze() {
+    super.freeze();
+  }
+
+  unfreeze() {
+    super.unfreeze();
   }
 
 

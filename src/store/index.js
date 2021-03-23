@@ -11,16 +11,16 @@ export default new Vuex.Store({
     settings: {
 
       timings: {
-        vote: 35,
+        vote: 45,
         delay: 15
       },
 
       chances: {
-        events: 7,
-        items: 7,
-        trinkets: 2,
-        other: 1,
-        removeItems: .4
+        events: 5,
+        items: 5,
+        trinkets: 1,
+        other: 3,
+        removeItems: 4
       },
 
       subsAndBits: {
@@ -37,7 +37,7 @@ export default new Vuex.Store({
         l2: {X: 16, Y: 215}
       },
 
-      subtime: 10*60*30
+      subtime: 15*60*30
 
     }
   },
@@ -51,6 +51,16 @@ export default new Vuex.Store({
     setSettings (state, payload) {
       state.settings = payload;
       localStorage.setItem('settings', JSON.stringify(payload));
+    },
+
+    setTwitchName (state, payload) {
+      state.twitchName = payload;
+      localStorage.setItem('twitchName', state.twitchName);
+    },
+
+    setTextPos (state, payload) {
+      state.settings.textpos = payload;
+      localStorage.setItem('settings', JSON.stringify(state.settings));
     }
 
   },
@@ -58,7 +68,7 @@ export default new Vuex.Store({
 
     initLocale ({commit}) {
 
-      switch (navigator.language) {
+      switch (navigator?.language) {
 
         case 'ru-RU':
           commit('setLocale', 'ru');
@@ -85,6 +95,11 @@ export default new Vuex.Store({
       if (localStorage.getItem('settings')) {
         commit('setSettings', JSON.parse(localStorage.getItem('settings')));
       }
+
+      if (localStorage.getItem('twitchName')) {
+        commit('setTwitchName', localStorage.getItem('twitchName'));
+      }
+
     }
 
   },

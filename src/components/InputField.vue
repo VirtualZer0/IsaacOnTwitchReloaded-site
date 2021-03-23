@@ -1,6 +1,6 @@
 <template>
   <div class="inputField">
-    <input v-bind:value="val" v-on:input="$emit('input', $event.target.value)" type="text" :placeholder="placeholder"/>
+    <input ref="inputField" v-bind:value="val" v-on:input="$emit('input', $event.target.value)" type="text" :placeholder="placeholder"/>
   </div>
 </template>
 
@@ -36,7 +36,7 @@ export default {
   justify-content: left;
   align-items: center;
   padding-left: 25px;
-  
+
   input {
     max-width: 500px;
     width: 95%;
@@ -49,4 +49,3 @@ export default {
   }
 }
 </style>
-

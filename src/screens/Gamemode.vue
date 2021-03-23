@@ -1,7 +1,7 @@
 <template>
   <div class="gamemodeScreen">
     <h1>{{"gamemode" | t($store.state.locale)}}</h1>
-    
+
     <div class="panel-container">
       <div class="panel hoverable" @click="start(0)">
         <h2>{{"easy" | t($store.state.locale)}}</h2>
@@ -36,11 +36,19 @@ export default {
     BigButton
   },
 
+  mounted () {
+
+    if (!this.$services.itmr) {
+      this.$router.push('/');
+      return;
+    }
+
+  },
+
   methods: {
     start (gamemode) {
-      
-      this.$isaac = new Isaac(this.$services, this.$store.state.settings, this.$store.state.locale, gamemode);
-      this.$isaac.start();
+      this.$root.isaac = new Isaac(this.$services, this.$store.state.settings, this.$store.state.locale, gamemode);
+      this.$root.isaac.start();
       this.$router.push('/game');
 
     }

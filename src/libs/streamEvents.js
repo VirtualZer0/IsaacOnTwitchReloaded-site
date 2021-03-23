@@ -24,10 +24,20 @@ export class TextMessage {
  * Superchat message for Youtube
  */
 export class DonateMessage {
-  constructor (userId, userName, amount, source) {
+
+  /**
+   *
+   * @param {Number|String} userId - Unique user id
+   * @param {String} userName - Displayed user name
+   * @param {Number} amount - Amount of bits
+   * @param {Number} type - Type of bits
+   * @param {String} source - Source of message, "yt" for YouTube, "tw" fro Twitch
+   */
+  constructor (userId, userName, amount, type, source) {
     this.userId = userId;
     this.userName = userName;
     this.amount = amount;
+    this.type = type;
     this.source = source;
   }
 }
@@ -37,6 +47,13 @@ export class DonateMessage {
  * New sponsor on YouTube
  */
 export class Subscriber {
+
+  /**
+   *
+   * @param {Number|String} userId - Unique user id
+   * @param {String} userName - Displayed user name
+   * @param {String} source - Source of message, "yt" for YouTube, "tw" fro Twitch
+   */
   constructor (userId, userName, source) {
     this.userId = userId;
     this.userName = userName;

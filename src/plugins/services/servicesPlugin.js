@@ -2,16 +2,16 @@
 
 let Services = {
 
-  install (vue, options) {
+  install (Vue, options) {
 
-    vue.prototype.$services = {
+    Vue.prototype.$services = {
       twitch: null,
       youtube: null,
       itmr: null
     }
 
-    vue.prototype.$isaac = null;
-  
+    Vue.prototype.$isaac = null;
+
   }
 
 }

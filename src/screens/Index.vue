@@ -21,9 +21,18 @@
       </router-link>
     </div>
 
+    <div class="language-selector">
+      <div class="language-selector-desc">{{$store.state.locale == 'en' ? 'Изменить язык на' : 'Change language to'}}</div>
+      <big-button @onClick="changeLanguage">{{$store.state.locale == 'en' ? 'Русский' : 'English'}}</big-button>
+    </div>
+
     <div class="credits">
       <p>{{"madeBy" | t($store.state.locale)}}</p>
-      <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded" target="_blank">{{"checkOnGithub" | t($store.state.locale)}}</a>
+      <div>
+        <router-link to="/luadebug">{{"enableLuadebug" | t($store.state.locale)}}</router-link>
+        <span> | </span>
+        <a href="https://github.com/VirtualZer0/IsaacTwitchModReloaded" target="_blank">{{"checkOnGithub" | t($store.state.locale)}}</a>
+      </div>
     </div>
   </div>
 </template>
@@ -31,16 +40,24 @@
 <script>
 import MenuItem from '../components/MenuItem.vue';
 import mobile from 'is-mobile';
+import BigButton from '../components/BigButton.vue';
 
 export default {
   name: 'IndexScreen',
   components: {
-    MenuItem
+    MenuItem,
+    BigButton
   },
 
   computed: {
     isMobile () {
       return mobile()
+    }
+  },
+
+  methods: {
+    changeLanguage () {
+      this.$store.commit('setLocale', this.$store.state.locale == 'en' ? 'ru' : 'en');
     }
   }
 }
@@ -53,5 +70,15 @@ export default {
     justify-content: space-evenly;
     align-content: center;
     height: inherit;
+  }
+
+  .language-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-desc {
+      margin-right: 12px;
+    }
   }
 </style>

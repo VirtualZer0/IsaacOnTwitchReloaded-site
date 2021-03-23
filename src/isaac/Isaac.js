@@ -4,7 +4,7 @@ import {ITMR_GAMEMODES} from './enums/Gamemodes'
 
 import ITMRText from './models/ITMRText'
 
-import {getRandomElementsFromArr, weightedRandom} from './helperFuncs'
+import {getRandomElementsFromArr, weightedRandom, randString} from './helperFuncs'
 
 import streamers from './data/streamers'
 
@@ -12,13 +12,17 @@ import TwitchConnect from '../libs/twitchConnect'
 import YoutubeConnect from '../libs/youtubeConnect'
 import IsaacConnect from './isaacConnect'
 
-import BasicPoll from './classes/BasicPoll'
-import ItemsPoll from './classes/ItemsPoll'
-import EventsPoll from './classes/EventsPoll';
-import TrinketsPoll from './classes/TrinketsPoll';
+import BasicPoll from './classes/Polls/Base/BasicPoll'
+import ItemsPoll from './classes/Polls/Graphic/ItemsPoll'
+import EventsPoll from './classes/Polls/Text/EventsPoll';
+import TrinketsPoll from './classes/Polls/Graphic/TrinketsPoll';
+import PocketsPoll from './classes/Polls/Bar/PocketsPoll';
+
 import Message from './classes/Message'
 import SpecialTriggers from './classes/SpecialTriggers';
-import PocketsPoll from './classes/PocketsPoll';
+
+import { DonateMessage, Subscriber, TextMessage } from '../libs/streamEvents';
+import SpecialMessageHandler from './classes/SpecialMessageHandler';
 
 /**
  * Main game controller
@@ -43,11 +47,11 @@ export default class Isaac {
     this.gamemode = gamemode;       // Current gamemode
 
     this.lists = {};                // All items, trinkets, events, etc.
+    this.activeUsers = {};          // All user from chat, using for bossnames
+    this.ticksCount = 0;            // Contains count of ticks
 
-    this.streamEventsQueue = {      // Queue for stream events, like bits and subscribers
-      bits: [],                     // Bits and superchat array
-      subs: [],                     // Subscribers and followers array
-    }
+    /** Contains chat window @type {Window} */
+    this.chatWindow = null;
 
     /** Main setInterval id @type {Number} */
     this.timer = null;
@@ -66,34 +70,65 @@ export default class Isaac {
     /** Contains special handlers for polling modification @type {SepcialTriggers} */
     this.specialTriggers = new SpecialTriggers();
 
+    /** Contains special handlers for message events @type {SepcialTriggers} */
+    this.specialMessageHandler = new SpecialMessageHandler(this);
+
     /** Game state @type {Boolean} */
     this.isPaused = false;
 
     // Bind events for Twitch
     if (this.services.twitch) {
       this.services.twitch.events.onMessage = this.onMessage.bind(this);
+      this.services.twitch.events.onSub = this.onSubscriber.bind(this);
+      this.services.twitch.events.onBits = this.onDonate.bind(this);
     }
 
     // Bind events for Youtube
     if (this.services.youtube) {
       this.services.youtube.events.onMessage = this.onMessage.bind(this);
+      this.services.youtube.events.onSub = this.onSubscriber.bind(this);
+      this.services.youtube.events.onSuperchat = this.onDonate.bind(this);
     }
 
-    // Add game state handlers
+    // Add output handlers
     this.services.itmr.addHandler('changeGameState', ({paused}) => {
       this.isPaused = paused;
     });
+
+    this.services.itmr.addHandler('acceptPoll', () => {
+      this.acceptPoll();
+    });
+
+    this.services.itmr.addHandler('skipPoll', () => {
+      this.skipPoll();
+    });
+
+    this.services.itmr.addHandler('newRun', () => {
+      this.start();
+    });
+
+    this.services.itmr.addHandler('toggleMovePlayer', ({enable}) => {
+      this.specialMessageHandler.state.movePlayer = enable;
+    });
   }
 
-  // Launch Isaac on Twitch
+  /**
+   * Launch Isaac on Twitch
+   */
   start () {
-    this.timer = setInterval(() => this.tick(), 1000);
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.freezedActions = [];
+      this.currentAction = null;
+      this.nextAction = null;
+      this.specialTriggers.stopAll();
+      this.specialMessageHandler.disableAll();
+    }
 
-    // Remove previous text
-    this.services.itmr.sendToGame({
-      m: 'removeText',
-      d: ['gameConnected']
-    }, true);
+    // Clear all UI elements
+    this.services.itmr.clearAll();
+
+    this.timer = setInterval(() => this.tick(), 1000);
 
     // Exchange startup data
     this.sendSettings()
@@ -117,20 +152,225 @@ export default class Isaac {
 
     });
 
+    // Give personal trinket
+    streamers.forEach(streamer => {
+
+      if (
+        streamer.twitch === this.services?.twitch?.channel.toLowerCase()
+        || streamer.youtube === this.services?.youtube?.channel
+      ) {
+        this.services.itmr.sendToGame({
+          m: 'gift',
+          d: {
+            trinket: streamer.trinket
+          }
+        }, true);
+      }
+
+    })
+
   }
 
-  // Timer loop, call every second
+  /**
+   * Timer loop, call every second
+   */
   tick () {
+    this.ticksCount ++;
     this.services.itmr.checkOutput();
-    this.currentAction?.update();
+
+    // Update user nicknames
+    if (this.ticksCount % 10 == 0) {
+
+      let users = Object.keys(this.activeUsers)
+
+      this.services.itmr.sendToGame({
+        m: 'randomNames',
+        d: users.length > 20 ?
+          getRandomElementsFromArr(users, 20)
+          : users
+      })
+    }
+
+    if (!this.services.itmr.isConnected) return;
+
+    this.currentAction.update?.();
   }
 
-  // Call on message in chat
+  /**
+   * Change poll position in game
+   * @param {String} pos - Position direction
+   */
+  changeTextPos(pos) {
+
+    console.log(this.settings.textpos)
+
+    switch (pos) {
+      case 'up':
+        this.settings.textpos.l1.Y -= 5;
+        this.settings.textpos.l2.Y -= 5;
+        break;
+
+      case 'down':
+        this.settings.textpos.l1.Y += 5;
+        this.settings.textpos.l2.Y += 5;
+        break;
+
+      case 'left':
+        this.settings.textpos.l1.X -= 5;
+        this.settings.textpos.l2.X -= 5;
+        break;
+
+      case 'right':
+        this.settings.textpos.l1.X += 5;
+        this.settings.textpos.l2.X += 5;
+        break;
+
+      case 'reset':
+        this.settings.textpos = {
+          l1: { X: 16, Y: 190 },
+          l2: { X: 16, Y: 215 }
+        }
+        break;
+    }
+
+    this.services.itmr.sendToGame({
+      m: 'textpos',
+      d: this.settings.textpos
+    }, true);
+
+    console.log(this.settings.textpos)
+
+    return this.settings.textpos;
+
+  }
+
+  /**
+   * Call on new message in chat
+   * @param {TextMessage} msg - Message from chat
+   */
   onMessage (msg) {
-    this.currentAction?.handleMessaage(msg);
+
+    let showInChat = true;
+    if (!this.activeUsers[msg.userName]) {
+      this.activeUsers[msg.userName] = true
+    }
+
+    // Check poll in message
+    if (this.currentAction?.handleMessaage) {
+      let res = this.currentAction?.handleMessaage?.(msg);
+      if (res === false) {
+        showInChat = false;
+      }
+    }
+
+    // Check special actions in message
+    let res = this.specialMessageHandler.handleMessage(msg);
+    if (res === false) {
+      showInChat = false
+    }
+
+
+    // Send message data to chat
+    if (this.chatWindow && !this.chatWindow.closed && showInChat) {
+      console.log('Send message');
+      this.chatWindow.postMessage?.({
+        chatMessage: {
+          type: 'basic',
+          user: msg.userName,
+          text: msg.text,
+          source: msg.source
+        }
+      }, '*');
+    }
   }
 
+  /**
+   * Call on new subscriber
+   * @param {Subscriber} subscriber - Subscriber object
+   */
+  onSubscriber (subscriber) {
+
+    if (!this.settings.subsAndBits.subs)
+      return;
+
+    this.immediateAction(new Message(this, new ITMRText(
+      `sub_${randString(8)}`,
+      `${t('newSub', this.lang)} - ${subscriber.userName}`,
+      this.settings.textpos.l1,
+      Colors.white,
+      Colors.yellow
+    ), null, 3));
+
+    this.services.itmr.sendToGame({
+      m: 'subscriberAction',
+      d: {name: subscriber.userName, time: this.settings.subtime}
+    });
+
+
+    // Send subscribe data to chat
+    if (this.chatWindow && !this.chatWindow.closed) {
+      this.chatWindow.postMessage?.({
+        chatMessage: {
+          type: 'subscribe',
+          user: subscriber.userName,
+          source: subscriber.source
+        }
+      }, '*');
+    }
+
+  }
+
+  /**
+   * Call on new bits or superchat
+   * @param {DonateMessage} donate - Subscriber object
+   */
+  onDonate(donate) {
+
+    if (!this.settings.subsAndBits.bits && donate.source == 'tw')
+      return;
+    else if (!this.settings.subsAndBits.superchat && donate.source == 'yt')
+      return;
+
+    this.immediateAction(new Message(this, new ITMRText(
+      `sub_${randString(8)}`,
+      donate.source == 'tw' ? t('newBits', this.lang) : t('newSuperchat', this.lang),
+      this.settings.textpos.l1,
+      Colors.white,
+      Colors.yellow
+    ), null, 3));
+
+    this.services.itmr.sendToGame({
+      m: 'bitsAction',
+      d: { amount: donate.amount, type: donate.type }
+    });
+
+  }
+
+  /**
+   * Launch action immediately, freeze preview action
+   * @param {BasicPoll|Message} action - Action for calling immediately
+   */
+  immediateAction(action) {
+    // Freeze current action
+    this.currentAction.freeze?.();
+
+    if(!(this.currentAction instanceof Message)) {
+      this.freezedActions.push(this.currentAction);
+    }
+
+    this.currentAction = action;
+
+  }
+
+  /**
+   * Prepare next action
+   */
   prepareNextAction() {
+
+    if (this.freezedActions.length > 0) {
+      return;
+    }
+
     this.specialTriggers.stopAll();
 
     // Select poll based on weights
@@ -160,18 +400,46 @@ export default class Isaac {
         break;
     }
 
-    this.nextAction?.prepare();
+    this.nextAction.prepare?.();
 
   }
 
   runNextAction() {
+    // If contains freezed action, launch it
+    if (this.freezedActions.length > 0) {
+      this.currentAction = this.freezedActions.pop();
+      return;
+    }
+
     this.currentAction = this.nextAction;
     this.nextAction = null;
-    this.currentAction.text.firstline?.setPrefix(this.specialTriggers.getFirstlineModifier());
+    this.currentAction?.text?.firstline?.setPrefix?.(this.specialTriggers.getFirstlineModifier());
   }
 
   // Give gift for available streamers
   giveGift () {
+
+  }
+
+  // Skip current poll
+  skipPoll () {
+
+    this.currentAction?.freeze?.();
+    this.currentAction = new Message(this, new ITMRText(
+      'skipvote',
+      t('skipCurrentPoll', this.lang),
+      this.settings.textpos.l1,
+      Colors.red,
+      Colors.yellow
+    ));
+
+  }
+
+  // Accept current poll
+  acceptPoll() {
+
+    if (this.currentAction && this.currentAction.pollTime)
+      this.currentAction.pollTime = 0;
 
   }
 

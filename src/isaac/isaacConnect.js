@@ -8,12 +8,14 @@ export default class IsaacConnect {
     this.stats = {
       success: 0, // Success requests (including successful attempts)
       errors: 0   // Failed requests
-    }
+    };
+
+    this.isConnected = false;
 
     // Event handlers
     this.events = {
       onConnect: () => {}
-    }
+    };
 
     this.port = port; // Game port
     this.lang = lang; // Localization
@@ -47,6 +49,13 @@ export default class IsaacConnect {
       }
     })
     .catch (err => {})
+  }
+
+  /**
+   * Stop current game server searching
+   */
+  stopSearch() {
+    clearInterval(this.searchServerTimer);
   }
 
   /**
@@ -84,29 +93,43 @@ export default class IsaacConnect {
         // Launch checking game output for two-way connection
         //this.checkOutputTimer = setInterval(() => this.checkOutput(), 1000);
 
-        // Remove pollframes
-        this.sendToGame({ m: 'removePollframes' });
+        this.isConnected = true;
 
-        // Remove progress bar
-        this.sendToGame({ m: 'removeProgressBar' });
 
-        // Clear text
-        this.sendToGame({
-          m: 'clearText'
-        }, true)
-        .then(() => {
+        this.clearAll().then(() => {
           // Show text for player
           this.sendToGame({
             m: 'addText',
             d: [new ITMRText('gameConnected', t('gameConnected', this.lang)).prepare()]
           })
-        })
 
-        // Call event onConnect
-        this._signal('onConnect');
+          // Call event onConnect
+          this._signal('onConnect');
+        })
 
       }
     })
+  }
+
+
+  /**
+   * Clear all UI elements from mod in game
+   */
+  clearAll() {
+
+    return Promise.all([
+      // Remove pollframes
+      this.sendToGame({ m: 'removePollframes' }, true),
+
+      // Remove progress bar
+      this.sendToGame({ m: 'removeProgressBar' }, true),
+
+      // Clear text
+      this.sendToGame({
+        m: 'clearText'
+      }, true)
+    ]);
+
   }
 
 
@@ -119,12 +142,15 @@ export default class IsaacConnect {
   sendToGame (data, high = false, repeat = 0) {
 
     return new Promise((resolve, reject) => {
-      this._send(data)
+      this._send(data, repeat, high)
       .then (res => res.json())
-      .then(res => resolve(res))
+      .then(
+        res => {
+          this.isConnected = true;
+          resolve(res);
+        }
+      )
       .catch(err => {
-        this._log('Connection to Isaac is broken', 'error')
-        console.error(err);
         reject (err);
       });
     });
@@ -141,6 +167,7 @@ export default class IsaacConnect {
     })
     .then (res => res.json())
     .then (res => {
+      this.isConnected = true;
       res.out.forEach(com => {
         if (this.handlers[com.c]) {
           this.handlers[com.c](com.d);
@@ -149,6 +176,10 @@ export default class IsaacConnect {
           this._log(`Not found handler for ${com.c}`);
         }
       });
+    })
+    .catch(err => {
+      this.isConnected = false;
+      this._log('Connection to Isaac skip request', 'warn');
     })
   }
 
@@ -200,9 +231,17 @@ export default class IsaacConnect {
       method: 'POST',
       body: `||${JSON.stringify(data)}||\n`
     }).catch(function (error) {
-      if (repeat > 3 && !high) throw error;
-      if (repeat > 6 && high) throw error;
-      return this._send(data, repeat, high + 1);
+
+      this.isConnected = false;
+      this._log('Connection to Isaac is broken', 'error');
+
+      if (repeat > 3 && !high) {
+        throw error;
+      }
+      if (repeat > 6 && high) {
+        throw error;
+      }
+      return this._send(data, repeat + 1, high);
     }.bind(this));
   }
 

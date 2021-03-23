@@ -1,10 +1,10 @@
-import Colors from '../enums/Colors';
-import ITMRText from '../models/ITMRText'
-import Isaac from '../Isaac'
+import Colors from '../../../enums/Colors';
+import ITMRText from '../../../models/ITMRText'
+import Isaac from '../../../Isaac'
 
-import t from '../../plugins/locale/translateFunction';
-import { getRandomElementsFromArr, weightedRandom } from '../helperFuncs'
-import DefaultPoll from './DefaultPoll';
+import t from '../../../../plugins/locale/translateFunction';
+import { getRandomElementsFromArr, weightedRandom } from '../../../helperFuncs'
+import DefaultPoll from '../Base/DefaultPoll';
 
 export default class EventsPoll extends DefaultPoll {
   /**
@@ -28,12 +28,10 @@ export default class EventsPoll extends DefaultPoll {
     });
 
     // Select 3 random events
-    for(let i = 0; i < 2; i++) {
+    for(let i = 0; i < 3; i++) {
       preparedEvents = preparedEvents.filter(event => !this.variants.some(selectedEvent => selectedEvent.id == event.id))
       this.variants.push(weightedRandom(preparedEvents));
     }
-
-    this.variants.push(preparedEvents.find(val => val.id == "RussianHackers"))
 
     this.text.firstline.setText(t('selectEvent', this.Isaac.lang));
     this.text.secondline.setText(this.getPollText());
@@ -69,6 +67,24 @@ export default class EventsPoll extends DefaultPoll {
       }
     }, true);
 
+  }
+
+  freeze() {
+
+    super.freeze();
+
+    this.Isaac.services.itmr.sendToGame({
+      m: 'removeText',
+      d: [
+        this.text.firstline.name,
+        this.text.secondline.name
+      ]
+    })
+
+  }
+
+  unfreeze() {
+    super.unfreeze();
   }
 
 

@@ -1,12 +1,13 @@
-import Colors from '../enums/Colors';
-import ITMRText from '../models/ITMRText'
-import Isaac from '../Isaac'
+import Colors from '../../../enums/Colors';
+import ITMRText from '../../../models/ITMRText'
+import Isaac from '../../../Isaac'
 
-import t from '../../plugins/locale/translateFunction';
-import { TextMessage } from '../../libs/streamEvents';
-import BasicPoll from './BasicPoll';
+import t from '../../../../plugins/locale/translateFunction';
+import { TextMessage } from '../../../../libs/streamEvents';
+import BasicPoll from '../Base/BasicPoll';
 
-import { randString } from '../helperFuncs'
+import { randString } from '../../../helperFuncs'
+import ITMRVector from '../../../models/ITMRVector';
 
 /**
  * Poll with images in variants
@@ -68,6 +69,7 @@ export default class GraphicPoll extends BasicPoll {
    * Update current poll state
    */
   update() {
+    super.update();
 
     // Send pollframes data
     if (this.isFirstUpdate) {
@@ -86,12 +88,15 @@ export default class GraphicPoll extends BasicPoll {
     if (!this.pollEnd) {
 
       if (this.pollTime > 0) {
+
+        if (!this.Isaac.isPaused)
         this.pollTime--;
-        this.text.firstline?.setPostfix(` (${this.pollTime}${t('s', this.Isaac.lang)})`);
+
+        this.text.firstline.setPostfix?.(` (${this.pollTime}${t('s', this.Isaac.lang)})`);
 
         let pollTexts = this.getPollText();
         for (let i = 0; i < pollTexts.length; i ++) {
-          this.text.secondline[i]?.setText(pollTexts[i]);
+          this.text.secondline[i].setText?.(pollTexts[i]);
         }
       }
       else {
@@ -103,8 +108,10 @@ export default class GraphicPoll extends BasicPoll {
     }
     else {
       if (this.delayTime > 0) {
-        this.delayTime--;
-        this.text.firstline?.setPostfix(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
+        if (!this.Isaac.isPaused)
+          this.delayTime--;
+
+        this.text.firstline.setPostfix?.(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
       }
       else {
 
@@ -123,11 +130,16 @@ export default class GraphicPoll extends BasicPoll {
     let texts = []
 
     if (this.text.firstline && this.text.firstline.prepare) {
-      texts.push(this.text.firstline.prepare())
+      this.text.firstline?.setPos(this.Isaac.settings.textpos.l1);
+      texts.push(this.text.firstline.prepare());
     }
 
     if (this.text.secondline) {
-      this.text.secondline?.forEach(text => {
+      this.text.secondline[0].setPos?.(this.Isaac.settings.textpos.l2);
+      this.text.secondline[1].setPos?.({ X: this.Isaac.settings.textpos.l2.X + 90, Y: this.Isaac.settings.textpos.l2.Y });
+      this.text.secondline[2].setPos?.({ X: this.Isaac.settings.textpos.l2.X + 180, Y: this.Isaac.settings.textpos.l2.Y });
+
+      this.text.secondline.forEach?.(text => {
         texts.push(text.prepare())
       });
     }
@@ -165,8 +177,12 @@ export default class GraphicPoll extends BasicPoll {
 
   }
 
+  /**
+   *
+   * @param {TextMessage} msg - Message from the chat
+   * @returns {Boolean} Show this message in chat
+   */
   handleMessaage(msg) {
-    if (this.pollEnd) return;
 
     // Check if this is vote for #1
     if (
@@ -175,6 +191,7 @@ export default class GraphicPoll extends BasicPoll {
       msg.text.toUpperCase() == this.variants[0].name.toUpperCase()
     ) {
       this.voteFor(0, `${msg.source}${msg.userId}`);
+      return false;
     }
 
     // Or for #2
@@ -184,6 +201,7 @@ export default class GraphicPoll extends BasicPoll {
       msg.text.toUpperCase() == this.variants[1].name.toUpperCase()
     ) {
       this.voteFor(1, `${msg.source}${msg.userId}`);
+      return false;
     }
 
     // Maybe, for #3?
@@ -193,7 +211,10 @@ export default class GraphicPoll extends BasicPoll {
       msg.text.toUpperCase() == this.variants[2].name.toUpperCase()
     ) {
       this.voteFor(2, `${msg.source}${msg.userId}`);
+      return false;
     }
+
+    return true;
   }
 
   /**
@@ -202,6 +223,7 @@ export default class GraphicPoll extends BasicPoll {
    * @param {Number|String} user - Unique user id
    */
   voteFor(num, user) {
+    if (this.pollEnd) return;
 
     // If "Russian hackers" event is active
     if (this.Isaac.specialTriggers.triggers.russianHackers.enabled) {
@@ -262,6 +284,54 @@ export default class GraphicPoll extends BasicPoll {
       `#3            ${this.getPercents(2)}%`
     ]
 
+  }
+
+  freeze () {
+
+    super.freeze();
+    if (!this.pollEnd) {
+
+      this.Isaac.services.itmr.sendToGame({
+        m: 'removePollframes'
+      });
+
+      this.Isaac.services.itmr.sendToGame({
+        m: 'removeText',
+        d: [
+          this.text.firstline.name,
+          this.text.secondline[0].name,
+          this.text.secondline[1].name,
+          this.text.secondline[2].name
+        ]
+      })
+
+    }
+    else {
+
+      this.Isaac.services.itmr.sendToGame({
+        m: 'removeText',
+        d: [this.text.firstline.name]
+      })
+
+    }
+
+  }
+
+  unfreeze () {
+    super.unfreeze();
+
+    if (!this.pollEnd) {
+
+      this.Isaac.services.itmr.sendToGame({
+        m: 'addPollframes',
+        d: {
+          f1: this.variants[0].gfx,
+          f2: this.variants[1].gfx,
+          f3: this.variants[2].gfx,
+        }
+      });
+
+    }
   }
 
 

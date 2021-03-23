@@ -1,10 +1,10 @@
-import Isaac from '../Isaac'
-import { TextMessage } from '../../libs/streamEvents';
+import Isaac from '../../../Isaac'
+import { TextMessage } from '../../../../libs/streamEvents';
 
-import Colors from '../enums/Colors';
-import ITMRText from '../models/ITMRText'
+import Colors from '../../../enums/Colors';
+import ITMRText from '../../../models/ITMRText'
 
-import { randString } from '../helperFuncs'
+import { randString } from '../../../helperFuncs'
 
 /**
  * Generic class for all polls
@@ -24,6 +24,7 @@ export default class BasicPoll {
     this.Isaac = Isaac;
     this.ready = true
     this.pollEnd = false;
+    this.freezed = false;
 
     this.text = {
       firstline: new ITMRText(
@@ -48,7 +49,7 @@ export default class BasicPoll {
    *
    */
   handleMessage(msg) {
-    if (this.pollEnd) return;
+    return true;
   }
 
   /**
@@ -62,7 +63,23 @@ export default class BasicPoll {
    * Update current poll state
    */
   update() {
+    if (this.freezed) {
+      this.unfreeze();
+    }
+  }
 
+  /**
+   * Freeze current poll
+   */
+  freeze() {
+    this.freezed = true;
+  }
+
+  /**
+   * Unfreeze current poll
+   */
+  unfreeze() {
+    this.freezed = false;
   }
 
 }

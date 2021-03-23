@@ -11,13 +11,6 @@ export default [
   },
 
   {
-    name: "SmiteTV",
-    twitch: "smitetv",
-    youtube: null,
-    trinket: "Yoshi shell"
-  },
-
-  {
     name: "Hutts",
     twitch: "huttsgaming",
     youtube: "UCy3avhfHpBbbgwZpNvuVklg",
@@ -39,13 +32,6 @@ export default [
   },
 
   {
-    name: "H4hen",
-    twitch: "h4hen",
-    youtube: "UCBx4iwYn6UDCB81QIPvhRlg",
-    trinket: "Honey Lord Sting"
-  },
-
-  {
     name: "Vertox",
     twitch: "vertroxmt",
     youtube: "UCMJr3O_NEpDSxqb9cYrZvcA",
@@ -53,24 +39,10 @@ export default [
   },
 
   {
-    name: "VadPribalt",
-    twitch: "vadpribalt",
-    youtube: "UCRz7XF78qF4booE3gIbYOng",
-    trinket: "Ring of Eternal Flame"
-  },
-
-  {
     name: "Mr. Ost",
     twitch: null,
     youtube: "UCyvSgWv830voOV6Nwqjwo4w",
-    trinket: "Mr. Ost coin eye"
-  },
-
-  {
-    name: "Roma Wake",
-    twitch: "romawake",
-    youtube: "UCLP8lZCzcko8x6Tnt5Ko60g",
-    trinket: "Radio 'Wake'"
+    trinket: "Greed coin eye"
   },
 
   {
@@ -78,13 +50,6 @@ export default [
     twitch: "crystalous",
     youtube: "UCKF1jFt8PUs240B7ccRXDfw",
     trinket: "Crystal shard"
-  },
-
-  {
-    name: "Junkey23",
-    twitch: "junkey23",
-    youtube: "UCXHczq_8PytR6mEJeUTTrqw",
-    trinket: "Rabbit paw"
   },
 
   {

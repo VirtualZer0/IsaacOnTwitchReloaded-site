@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 
-    <header>
+    <header v-if="$route.name != 'chat'">
       <div class="logo" :style="`background-image: url('${getImgUrl('logo')}')`"></div>
     </header>
 
@@ -46,6 +46,7 @@ body {
   text-decoration: none;
   image-rendering: pixelated;
   overflow-x: hidden;
+  overflow-y: overlay;
   font-size: calc(14px + (26 - 14) * ((100vmax - 300px) / (1600 - 300)));
   line-height: calc(1.3em + (1.5 - 1.2) * ((100vmax - 300px)/(1600 - 300)));
   padding-bottom: 40px;
@@ -158,15 +159,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .screenAnim-leave-active,
 .screenAnim-enter-active {
-  transition: all .3s ease-in-out;
+  transition: all .4s ease-in-out;
 }
 
 .screenAnim-enter {
-  transform: translate(100%, 0);
+  transform: translate(160%, 0);
 }
 
 .screenAnim-leave-to {
-  transform: translate(-100%, 0);
+  transform: translate(-160%, 0);
 }
 
 .twitch {

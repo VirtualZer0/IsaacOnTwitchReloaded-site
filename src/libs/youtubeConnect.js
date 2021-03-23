@@ -11,6 +11,8 @@ export default class YoutubeConnect {
     this.apikey = "AIzaSyCULdGwd1OoBvvgGB7Ajc4J7x47gKl2Y0s";
     this.streamURL = new URL(streamURLString);
     this.lastMessagesId = [];
+    this.vuewersCount = 0;
+    this.channel = null;
 
     this.consoleStyle = 'background-color: #FF0000; color: #FFFFFF; border-radius: 100px;padding: 1px 4px;';
 
@@ -40,10 +42,12 @@ export default class YoutubeConnect {
     })
     .then (res => {
       this.chatId = res.items[0].liveStreamingDetails.activeLiveChatId;
+      this.channel = res.items[0].snippet.channelId
       this._updateChat();
       this.updTimer = setInterval(this._updateChat.bind(this), 3000);
 
       this._log("Connected to " + this.chatId);
+      this._log("Channel id: " + this.channel);
     })
     .catch (err => {
       this._signal('onError', err);
@@ -54,6 +58,20 @@ export default class YoutubeConnect {
 
     clearInterval(this.updTimer);
     this._signal('onDisconnect', null);
+
+  }
+
+  updateViewers() {
+
+    return fetch(
+      `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${this.streamId}&fields=items%2FliveStreamingDetails%2FconcurrentViewers&key=${this.apikey}`
+      )
+      .then(res => res.json())
+      .then(res => {
+        if (res.items?.length > 0) {
+          this.viewersCount = res.items[0].liveStreamingDetails.concurrentViewers
+        }
+      })
 
   }
 
@@ -92,6 +110,7 @@ export default class YoutubeConnect {
             msg.snippet.authorChannelId,
             msg.authorDetails.displayName,
             msg.snippet.superChatDetails.tier > 5 ? 5 : msg.snippet.superChatDetails.tier,
+            1,
             'yt'
           ));
 
@@ -104,6 +123,7 @@ export default class YoutubeConnect {
             msg.snippet.authorChannelId,
             msg.authorDetails.displayName,
             msg.snippet.superStickerDetails.tier > 5 ? 5 : msg.snippet.superStickerDetails.tier,
+            1,
             'yt'
           ));
 

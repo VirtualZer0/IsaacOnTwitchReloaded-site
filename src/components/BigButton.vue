@@ -20,7 +20,6 @@ export default {
 <style lang="scss">
 .bigButton {
   display: inline-block;
-  margin: 0 auto;
   margin-top: 8px;
 
   background-image: url("../assets/img/buttonBg.png");

@@ -1,10 +1,11 @@
 <template>
-  <div class="loginScreen">
+  <div class="channelScreen">
     <h1>{{"whoAreYou" | t($store.state.locale)}}</h1>
+    <div class="channels-description">{{"channelsDesc" | t($store.state.locale)}}</div>
     <div class="fields">
       <div class="field">
         <div class="sign twitch">Twitch</div>
-        <InputField v-model="twitchChannel" :placeholder="'channelName' | t($store.state.locale)"/>
+        <InputField v-model="twitchChannel" ref="twitchChannel" :placeholder="'channelName' | t($store.state.locale)"/>
       </div>
       <div class="field">
         <div class="sign youtube">YouTube</div>
@@ -25,7 +26,7 @@ import TwitchConnect from '../libs/twitchConnect.js';
 import YoutubeConnect from '../libs/youtubeConnect.js'
 
 export default {
-  name: 'loginScreen',
+  name: 'channelScreen',
   components: {
     InputField, BigButton
   },
@@ -52,6 +53,7 @@ export default {
       if (this.twitchChannel != '') {
         this.$services.twitch = new TwitchConnect(this.twitchChannel);
         this.$services.twitch.connect();
+        this.$store.commit('setTwitchName', this.twitchChannel);
         //this.$services.twitch.startCheckNewFollowers();
       }
 
@@ -62,16 +64,21 @@ export default {
 
       this.$router.push('/settings');
     }
+  },
+
+  mounted () {
+    this.$refs.twitchChannel.$refs.inputField.value = this.$store.state.twitchName;
+    this.twitchChannel = this.$store.state.twitchName;
   }
 }
 </script>
 
 <style lang="scss">
-.mainMenu {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  align-content: center;
+
+.channels-description {
+  font-size: 16px;
+  margin-top: -12px;
+  margin-bottom: 20px;
 }
 
 .fields {

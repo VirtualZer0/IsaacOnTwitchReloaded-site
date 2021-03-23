@@ -11,6 +11,9 @@
         <div class="field">
           {{"delay" | t($store.state.locale)}} <input class="simple-input" type="text" v-model="settings.timings.delay"/>{{"s" | t($store.state.locale)}}
         </div>
+        <div class="field">
+          {{"subtime" | t($store.state.locale)}} <input class="simple-input" type="text" v-model="convertedSubtime"/>{{"m" | t($store.state.locale)}}
+        </div>
       </div>
 
       <div class="panel">
@@ -20,6 +23,9 @@
         <input-switcher v-model="settings.chances.items">{{"items" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.chances.trinkets">{{"trinkets" | t($store.state.locale)}}</input-switcher>
         <input-switcher v-model="settings.chances.other">{{"other" | t($store.state.locale)}}</input-switcher>
+        <br>
+        <input-switcher v-model="settings.chances.removeItems">{{"removeItems" | t($store.state.locale)}}</input-switcher>
+        <div class="remove-item-desc">({{"removeItemsDesc" | t($store.state.locale)}})</div>
 
       </div>
 
@@ -55,16 +61,16 @@ export default {
     return {
       settings: {
         timings: {
-          vote: 35,
+          vote: 45,
           delay: 15
         },
 
         chances: {
-          events: 7,
-          items: 7,
-          trinkets: 2,
-          other: 1,
-          removeItems: .4
+          events: 5,
+          items: 5,
+          trinkets: 1,
+          other: 3,
+          removeItems: 4
         },
 
         subsAndBits: {
@@ -82,18 +88,26 @@ export default {
         },
 
         subtime: 10*60*30
-      }
+      },
+
+      convertedSubtime: 10
     }
   },
 
   methods: {
     save () {
+      this.settings.subtime = this.convertedSubtime*30*60;
       this.$store.commit('setSettings', this.settings);
     }
   },
 
   mounted () {
+    if (!this.$services.itmr) {
+      this.$router.push('/');
+      return;
+    }
     this.settings = JSON.parse(JSON.stringify(this.$store.state.settings));
+    this.convertedSubtime = this.settings.subtime/60/30
   }
 }
 </script>
@@ -111,6 +125,11 @@ export default {
   text-align: center;
   max-width: 90px;
   margin-bottom: 20px;
+}
+
+.remove-item-desc {
+  font-size: 16px;
+  margin-top: -8px;
 }
 
 

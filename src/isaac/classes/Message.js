@@ -30,21 +30,23 @@ export default class Message {
   update() {
     this.firstline.setPostfix(` (${this.time}${t('s', this.Isaac.lang)})`);
 
-    let texts = [];
+    if (this.time > 0) {
+      let texts = [];
 
-    if (this.firstline)
-      texts.push(this.firstline.prepare());
+      if (this.firstline)
+        texts.push(this.firstline.prepare());
 
-    if (this.secondline)
-      texts.push(this.secondline.prepare());
+      if (this.secondline)
+        texts.push(this.secondline.prepare());
 
-    this.Isaac.services.itmr.sendToGame({
-      m: 'addText',
-      d: texts
-    });
+      this.Isaac.services.itmr.sendToGame({
+        m: 'addText',
+        d: texts
+      });
 
-    if (this.time > 0)
-      this.time --;
+      if (!this.Isaac.isPaused)
+        this.time--;
+    }
     else {
 
       let textsForRemove = []
@@ -65,6 +67,26 @@ export default class Message {
       this.Isaac.runNextAction();
     }
 
+  }
+
+  /**
+   * Freeze current message
+   */
+  freeze () {
+    let textsForRemove = []
+
+    if (this.firstline) {
+      textsForRemove.push(this.firstline.name)
+    }
+
+    if (this.secondline) {
+      textsForRemove.push(this.secondline.name)
+    }
+
+    this.Isaac.services.itmr.sendToGame({
+      m: 'removeText',
+      d: textsForRemove
+    });
   }
 
 }

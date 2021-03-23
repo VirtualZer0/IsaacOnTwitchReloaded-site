@@ -1,10 +1,10 @@
-import Colors from '../enums/Colors';
-import ITMRText from '../models/ITMRText'
-import Isaac from '../Isaac'
+import Colors from '../../../enums/Colors';
+import ITMRText from '../../../models/ITMRText'
+import Isaac from '../../../Isaac'
 
-import t from '../../plugins/locale/translateFunction';
-import { getRandomElementsFromArr } from '../helperFuncs'
-import GraphicPoll from './GraphicPoll';
+import t from '../../../../plugins/locale/translateFunction';
+import { getRandomElementsFromArr } from '../../../helperFuncs'
+import GraphicPoll from '../Base/GraphicPoll';
 
 export default class TrinketsPoll extends GraphicPoll {
   /**

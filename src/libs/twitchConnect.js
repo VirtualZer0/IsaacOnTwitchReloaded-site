@@ -9,6 +9,7 @@ export default class TwitchConnect {
   constructor (channel) {
     this.channel = channel;
     this.userId = null;
+    this.viewersCount = 0;
 
     this.apikey = "vtr91vw1dzji7piypq7r13itr6is2i"; // API Key for Twitch API. Not very secret information
     this.botname = "justinfan666";
@@ -72,6 +73,20 @@ export default class TwitchConnect {
     clearInterval(this.updFollowersTimer);
   }
 
+  updateViewers () {
+
+    return fetch(`https://api.twitch.tv/helix/streams?user_login=${this.channel}`, {
+      headers: { 'Client-ID': this.apikey },
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.stream) {
+        this.viewersCount = res.stream.viewers
+      }
+    })
+
+  }
+
   /**
    * Calling whem new message received
    * @param {String} msg - Raw message from Twitch
@@ -126,10 +141,40 @@ export default class TwitchConnect {
 
     // Handle bits
     else if (parsed.command == "PRIVMSG" && parsed.tags.hasOwnProperty('bits')) {
+
+      let bits = parseFloat(parsed.tags["bits"]);
+      let bitsType = 1;
+      let bitsCount = bits > 10 ? 10 : bits;
+
+      if (bits < 10) return;
+
+      if (bits / 100 >= 1) {
+        bitsType = 2;
+        bitsCount = Math.Round(bits / 100);
+      }
+
+      if (bits / 1000 >= 1) {
+        bitsType = 3;
+        bitsCount = Math.Round(bits / 1000);
+      }
+
+      if (bits / 5000 >= 1) {
+        bitsType = 4;
+        bitsCount = Math.Round(bits / 5000);
+      }
+
+      if (bits / 10000 >= 1) {
+        bitsType = 5;
+        bitsCount = Math.Round(bits / 10000);
+      }
+
+      bitsCount = bitsCount > 10 ? 10 : bitsCount;
+
       this._signal('onBits', new DonateMessage(
         parsed.tags["user-id"],
         parsed.tags["display-name"],
-        parsed.tags["bits"],
+        bitsCount,
+        bitsType,
         'tw'
       ));
 

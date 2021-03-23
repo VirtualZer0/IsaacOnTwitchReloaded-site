@@ -1,10 +1,10 @@
-import Colors from '../enums/Colors';
-import ITMRText from '../models/ITMRText'
-import Isaac from '../Isaac'
+import Colors from '../../../enums/Colors';
+import ITMRText from '../../../models/ITMRText'
+import Isaac from '../../../Isaac'
 
-import t from '../../plugins/locale/translateFunction';
-import { TextMessage } from '../../libs/streamEvents';
-import BasicPoll from './BasicPoll';
+import t from '../../../../plugins/locale/translateFunction';
+import { TextMessage } from '../../../../libs/streamEvents';
+import BasicPoll from '../Base/BasicPoll';
 
 /**
  * Poll with progress bar
@@ -102,6 +102,8 @@ export default class PocketsPoll extends BasicPoll {
    */
   update() {
 
+    super.update();
+
     // Show progress bar
     if (this.isFirstUpdate) {
       this.Isaac.services.itmr.sendToGame({
@@ -132,7 +134,8 @@ export default class PocketsPoll extends BasicPoll {
           }
         })
 
-        this.pollTime--;
+        if (!this.Isaac.isPaused)
+          this.pollTime--;
       }
       else {
         this.endPoll();
@@ -142,8 +145,10 @@ export default class PocketsPoll extends BasicPoll {
     }
     else {
       if (this.delayTime > 0) {
-        this.delayTime--;
-        this.text.firstline?.setPostfix(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
+        if (!this.Isaac.isPaused)
+          this.delayTime--;
+
+        this.text.firstline.setPostfix?.(` (${this.delayTime}${t('s', this.Isaac.lang)})`)
       }
       else {
 
@@ -183,7 +188,7 @@ export default class PocketsPoll extends BasicPoll {
     this.Isaac.services.itmr.sendToGame({ m: 'removeProgressBar' });
 
     this.text.firstline.setBlink(Colors.white);
-    this.text.firstline?.setPostfix(` (${this.delayTime}${t('s', this.Isaac.lang)})`);
+    this.text.firstline.setPostfix?.(` (${this.delayTime}${t('s', this.Isaac.lang)})`);
 
     let winner = this.getWinner();
 
@@ -200,12 +205,12 @@ export default class PocketsPoll extends BasicPoll {
 
       // If winner is none, send basic message
       if (winner == 'none') {
-        this.text.firstline?.setText(t('pollNoneResult', this.Isaac.lang));
+        this.text.firstline.setText?.(t('pollNoneResult', this.Isaac.lang));
       }
       else {
 
         // Set text for Hearts and Pockets poll
-        this.text.firstline?.setText(
+        this.text.firstline.setText?.(
           `${t('pollGiveResult', this.Isaac.lang)}: ${t(winner, this.Isaac.lang)} ${
 
             // If this is heaerts poll, add "heart" word at the end
@@ -222,21 +227,21 @@ export default class PocketsPoll extends BasicPoll {
     else {
       // If winner is 0, send basic message
       if (winner == 0) {
-        this.text.firstline?.setText(t('pollNoneResult', this.Isaac.lang));
+        this.text.firstline.setText?.(t('pollNoneResult', this.Isaac.lang));
       }
       else {
 
         // If winner is equal 'gold', set special message
         if (winner == 'gold') {
           if (this.pollType.name == "Keys")
-            this.text.firstline?.setText(`${t('pollGiveResult', this.Isaac.lang)}: ${t('goldenkey', this.Isaac.lang)}`);
+            this.text.firstline.setText?.(`${t('pollGiveResult', this.Isaac.lang)}: ${t('goldenkey', this.Isaac.lang)}`);
           else
-            this.text.firstline?.setText(`${t('pollGiveResult', this.Isaac.lang)}: ${t('goldenbomb', this.Isaac.lang)}`);
+            this.text.firstline.setText?.(`${t('pollGiveResult', this.Isaac.lang)}: ${t('goldenbomb', this.Isaac.lang)}`);
         }
 
         // If winner more than zero, set message from "pollGiveResult" string
         else if (winner > 0) {
-          this.text.firstline?.setText(
+          this.text.firstline.setText?.(
             `${t('pollGiveResult', this.Isaac.lang)}: ${winner} ${
               t(
                 winner == 1 || winner == -1 ? this.pollType.name.toLowerCase().substr(0, this.pollType.name.length - 1) : this.pollType.name.toLowerCase(),
@@ -247,7 +252,7 @@ export default class PocketsPoll extends BasicPoll {
         }
         // If winner smaller than zero, set message from "pollRemoveResult" string
         else {
-          this.text.firstline?.setText(
+          this.text.firstline.setText?.(
             `${t('pollRemoveResult', this.Isaac.lang)}: ${-1 * winner} ${t(this.pollType.name.toLowerCase(), this.Isaac.lang)}`
           )
         }
@@ -260,7 +265,6 @@ export default class PocketsPoll extends BasicPoll {
   }
 
   handleMessaage(msg) {
-    if (this.pollEnd) return;
 
     // Check if this is positive
     if (
@@ -268,6 +272,7 @@ export default class PocketsPoll extends BasicPoll {
       msg.text.toUpperCase() == "БОЛЬШЕ"
     ) {
       this.voteFor(true, `${msg.source}${msg.userId}`);
+      return false;
     }
 
     // Or negative
@@ -276,7 +281,10 @@ export default class PocketsPoll extends BasicPoll {
       msg.text.toUpperCase() == "МЕНЬШЕ"
     ) {
       this.voteFor(false, `${msg.source}${msg.userId}`);
+      return false;
     }
+
+    return true;
   }
 
   /**
@@ -285,6 +293,7 @@ export default class PocketsPoll extends BasicPoll {
    * @param {Number|String} user - Unique user id
    */
   voteFor(positive, user) {
+    if (this.pollEnd) return;
 
     // If "Russian hackers" event is active, swap votes
     if (this.Isaac.specialTriggers.triggers.russianHackers.enabled) {
@@ -322,6 +331,41 @@ export default class PocketsPoll extends BasicPoll {
    */
   getWinner() {
     return this.pollType.sectors[Math.ceil(this.positiveVotes / this.allVotesCount * this.pollType.sectors.length) - 1];
+  }
+
+  freeze() {
+    super.freeze();
+
+    if (!this.pollEnd) {
+      this.Isaac.services.itmr.sendToGame({ m: 'removeProgressBar' });
+    }
+    else {
+      this.Isaac.services.itmr.sendToGame({
+        m: 'removeText',
+        d: [
+          this.text.firstline.name
+        ]
+      })
+    }
+
+  }
+
+  unfreeze() {
+    super.unfreeze();
+
+    if (!this.pollEnd) {
+      this.Isaac.services.itmr.sendToGame({
+        m: 'addProgressBar',
+        d: {
+          barType: this.pollType.name,
+          title: `${this.Isaac.specialTriggers.getFirstlineModifier()} ${this.pollType.title} (${this.pollTime}${t('s', this.Isaac.lang)})`,
+          min: 0,
+          value: 1,
+          max: 2,
+          sectors: this.pollType.sectors.length
+        }
+      })
+    }
   }
 
 
