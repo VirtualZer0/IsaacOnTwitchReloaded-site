@@ -21,7 +21,7 @@ export default [
     name: "Tijoe",
     twitch: "tijoe",
     youtube: "UCpcg8-wx6SOW3PfGT83E-BA",
-    trinket: "Torn cat ear"
+    trinket: "Torn fox ear"
   },
 
   {
