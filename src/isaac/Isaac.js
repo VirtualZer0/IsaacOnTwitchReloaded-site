@@ -405,6 +405,9 @@ export default class Isaac {
   }
 
   runNextAction() {
+    // Remove graphical elements from preview poll or message
+    this.currentAction?.freeze();
+
     // If contains freezed action, launch it
     if (this.freezedActions.length > 0) {
       this.currentAction = this.freezedActions.pop();
