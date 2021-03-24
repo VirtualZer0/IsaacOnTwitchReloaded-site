@@ -80,4 +80,11 @@ export default [
     trinket: "Spider eye"
   },
 
+  {
+    name: "D4N9",
+    twitch: "d4n9_twitch",
+    youtube: "UCIo6gZsEszFf66M0V3WHEAA",
+    trinket: "Broken D4-R4 console"
+  },
+
 ]
