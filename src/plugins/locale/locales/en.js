@@ -80,6 +80,7 @@ export default {
     "gameStatePaused": "Game paused",
     "textPosition": "Text position",
     "resetTextPosition": "Reset position",
+    "keepTabActive": "Keep this tab active, otherwise your poll can freeze",
 
     "gameConnected": "Now enter Twitch and/or YouTube info on site",
     "gameSetupDone": "Nice! New poll will start coming soon",

@@ -1,6 +1,6 @@
 <template>
   <div class="gameScreen">
-
+    <h2>{{"keepTabActive" | t($store.state.locale)}}</h2>
     <div class="panel-container">
       <div class="panel">
         <h2>{{"status" | t($store.state.locale)}}</h2>

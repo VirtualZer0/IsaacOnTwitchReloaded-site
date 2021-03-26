@@ -80,6 +80,7 @@ export default {
     "gameStatePaused": "Игра на паузе",
     "textPosition": "Положение текста",
     "resetTextPosition": "Установить по умолчанию",
+    "keepTabActive": "Держите эту вкладку активной, иначе голосование может застрять",
 
     "gameConnected": "Теперь введите данные для Twitch и/или YouTube на сайте",
     "gameSetupDone": "Отлично! Голосование сейчас начнется",
