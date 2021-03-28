@@ -66,18 +66,18 @@ export default class PocketsPoll extends BasicPoll {
       {
         name: "Keys",
         title: t('selectKeys', this.Isaac.lang),
-        sectors: [-3, -2, -1, 0, 1, 2, 3, 'gold']
+        sectors: ['half', -2, -1, 0, 1, 2, 3, 'gold']
       },
       {
         name: "Bombs",
         title: t('selectBombs', this.Isaac.lang),
-        sectors: [-3, -2, -1, 0, 1, 2, 3, 'gold']
+        sectors: ['half', -2, -1, 0, 1, 2, 3, 'gold']
       },
 
       {
         name: "Coins",
         title: t('selectCoins', this.Isaac.lang),
-        sectors: [-5, -2, -1, 0, 1, 2, 5, 10]
+        sectors: ['half', -2, -1, 0, 1, 2, 5, 10]
       }
     ];
 
@@ -237,6 +237,16 @@ export default class PocketsPoll extends BasicPoll {
             this.text.firstline.setText?.(`${t('pollGiveResult', this.Isaac.lang)}: ${t('goldenkey', this.Isaac.lang)}`);
           else
             this.text.firstline.setText?.(`${t('pollGiveResult', this.Isaac.lang)}: ${t('goldenbomb', this.Isaac.lang)}`);
+        }
+
+        // If winner is equal 'half', set special message
+        if (winner == 'half') {
+          if (this.pollType.name == "Keys")
+            this.text.firstline.setText?.(`${t('pollRemoveResult', this.Isaac.lang)}: ${t('halfkeys', this.Isaac.lang)}`);
+          else if (this.pollType.name == "Bombs")
+            this.text.firstline.setText?.(`${t('pollRemoveResult', this.Isaac.lang)}: ${t('halfbombs', this.Isaac.lang)}`);
+          else if (this.pollType.name == "Coins")
+            this.text.firstline.setText?.(`${t('pollRemoveResult', this.Isaac.lang)}: ${t('halfcoins', this.Isaac.lang)}`);
         }
 
         // If winner more than zero, set message from "pollGiveResult" string

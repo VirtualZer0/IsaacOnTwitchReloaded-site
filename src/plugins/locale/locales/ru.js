@@ -127,6 +127,9 @@ export default {
     "sack": "Мешок",
     "goldenkey": "Золотой ключ",
     "goldenbomb": "Золотая бомба",
+    "halfkeys": "Половину ключей",
+    "halfbombs": "Половину бомб",
+    "halfcoins": "Половину монет",
 
     "coinsSmallerThan5": "монеты",
     "bombsSmallerThan5": "бомбы",

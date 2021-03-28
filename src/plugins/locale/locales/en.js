@@ -127,6 +127,9 @@ export default {
     "sack": "Sack",
     "goldenkey": "Golden key",
     "goldenbomb": "Golden bomb",
+    "halfkeys": "half of the keys",
+    "halfbombs": "half of the bombs",
+    "halfcoins": "half of the coins",
 
     "coinsSmallerThan5": "coins",
     "bombsSmallerThan5": "bombs",
