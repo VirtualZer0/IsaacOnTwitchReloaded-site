@@ -20,10 +20,10 @@ export default class PocketsPoll extends BasicPoll {
     super(Isaac);
 
     /** Contains positive votes count @type {Number} */
-    this.positiveVotes = 1;
+    this.positiveVotes = 0;
 
     /** Contains all votes @type {Number} */
-    this.allVotesCount = 2;
+    this.allVotesCount = 0;
 
     /** Contains current poll type @type {Object} */
     this.pollType = null;
@@ -112,8 +112,8 @@ export default class PocketsPoll extends BasicPoll {
           barType: this.pollType.name,
           title: `${this.Isaac.specialTriggers.getFirstlineModifier()} ${this.pollType.title} (${this.pollTime}${t('s', this.Isaac.lang)})`,
           min: 0,
-          value: 1,
-          max: 2,
+          value: 0,
+          max: 1,
           sectors: this.pollType.sectors.length
         }
       })
@@ -130,7 +130,7 @@ export default class PocketsPoll extends BasicPoll {
             title: `${this.Isaac.specialTriggers.getFirstlineModifier()} ${this.pollType.title} (${this.pollTime}${t('s', this.Isaac.lang)})`,
             min: 0,
             value: this.positiveVotes,
-            max: this.allVotesCount
+            max: this.allVotesCount == 0 ? 1 : this.allVotesCount
           }
         })
 
@@ -370,8 +370,8 @@ export default class PocketsPoll extends BasicPoll {
           barType: this.pollType.name,
           title: `${this.Isaac.specialTriggers.getFirstlineModifier()} ${this.pollType.title} (${this.pollTime}${t('s', this.Isaac.lang)})`,
           min: 0,
-          value: 1,
-          max: 2,
+          value: 0,
+          max: 1,
           sectors: this.pollType.sectors.length
         }
       })
