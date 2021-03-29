@@ -150,22 +150,22 @@ export default class TwitchConnect {
 
       if (bits / 100 >= 1) {
         bitsType = 2;
-        bitsCount = Math.Round(bits / 100);
+        bitsCount = Math.round(bits / 100);
       }
 
       if (bits / 1000 >= 1) {
         bitsType = 3;
-        bitsCount = Math.Round(bits / 1000);
+        bitsCount = Math.round(bits / 1000);
       }
 
       if (bits / 5000 >= 1) {
         bitsType = 4;
-        bitsCount = Math.Round(bits / 5000);
+        bitsCount = Math.round(bits / 5000);
       }
 
       if (bits / 10000 >= 1) {
         bitsType = 5;
-        bitsCount = Math.Round(bits / 10000);
+        bitsCount = Math.round(bits / 10000);
       }
 
       bitsCount = bitsCount > 10 ? 10 : bitsCount;
