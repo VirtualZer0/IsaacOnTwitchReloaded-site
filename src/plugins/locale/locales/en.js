@@ -63,7 +63,7 @@ export default {
     "default": "Default",
     "defaultDesc": "Critical events have a small chance. Perfectly balanced, but what did it cost?",
     "crazy": "Crazy",
-    "crazyDesc": "All events have equal chances. Well, good luck",
+    "crazyDesc": "All events have equal chances. Any items can appear in any poll. Well, good luck",
 
     "status": "Status",
     "connected": "Connected",

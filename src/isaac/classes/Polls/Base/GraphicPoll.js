@@ -256,6 +256,22 @@ export default class GraphicPoll extends BasicPoll {
    * @returns {Object} Winner
    */
   getWinner() {
+    if (this.votes[0] == this.votes[1] == this.votes[2] || this.allVotesCount == 0) {
+      return this.variants[Math.floor(Math.random() * this.variants.length)];
+    }
+
+    else if (this.votes[0] == this.votes[1] && this.votes[2] < this.votes[0]) {
+      return Math.random() > .5 ? this.variants[1] : this.variants[0]
+    }
+
+    else if (this.votes[1] == this.votes[2] && this.votes[0] < this.votes[1]) {
+      return Math.random() > .5 ? this.variants[2] : this.variants[1]
+    }
+
+    else if (this.votes[0] == this.votes[2] && this.votes[1] < this.votes[0]) {
+      return Math.random() > .5 ? this.variants[2] : this.variants[0]
+    }
+
     return this.variants[this.votes.indexOf(Math.max(...this.votes))];
   }
 

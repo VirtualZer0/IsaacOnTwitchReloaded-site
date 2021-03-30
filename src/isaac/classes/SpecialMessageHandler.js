@@ -13,7 +13,8 @@ export default class SpecialMessageHandler {
 
     this.state = {
       movePlayer: false,
-      viewersAttack: false
+      viewersAttack: false,
+      heavyRain: false,
     }
 
     this.sended = 0;
@@ -43,6 +44,13 @@ export default class SpecialMessageHandler {
       }
     }
 
+    if (this.state.heavyRain) {
+      let res = this.heavyRain(message);
+      if (!res) {
+        showInChat = false
+      }
+    }
+
     return showInChat;
 
   }
@@ -54,6 +62,7 @@ export default class SpecialMessageHandler {
   disableAll () {
     this.state.movePlayer = false;
     this.state.viewersAttack = false;
+    this.state.heavyRain = false;
   }
 
   /**
@@ -106,6 +115,15 @@ export default class SpecialMessageHandler {
 
     return true;
 
+  }
+
+  heavyRain(message) {
+    let text = message.text.toUpperCase();
+
+    if (text == 'X' || text == 'Х') {
+      this.sendToGame({ m: 'jason'})
+      return false;
+    }
   }
 
   sendToGame (object) {

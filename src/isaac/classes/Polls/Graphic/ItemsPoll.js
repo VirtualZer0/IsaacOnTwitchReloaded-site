@@ -1,6 +1,7 @@
 import Colors from '../../../enums/Colors';
 import ITMRText from '../../../models/ITMRText'
 import Isaac from '../../../Isaac'
+import ignorableItems from '../../../data/ignorableItems'
 
 import t from '../../../../plugins/locale/translateFunction';
 import { getRandomElementsFromArr } from '../../../helperFuncs'
@@ -35,6 +36,12 @@ export default class ItemsPoll extends GraphicPoll {
 
   setReady (playerItems) {
 
+    if (this.Isaac.gamemode != 2) {
+      playerItems = playerItems.filter(
+        playerItem => !ignorableItems.some(ignItem => playerItem == this.items.find(item => item.name == ignItem).id)
+      );
+    }
+
     // Remove item with setting chance and only if player have more than 3 items
     if (Math.random() < this.Isaac.settings.chances.removeItems/10 && playerItems.length > 3) {
 
@@ -55,7 +62,7 @@ export default class ItemsPoll extends GraphicPoll {
 
     }
 
-    // Give item with 72% chance
+    // Give item
     else {
 
       // Set poll state
@@ -65,9 +72,18 @@ export default class ItemsPoll extends GraphicPoll {
       this.text.firstline.setText(t('selectItem', this.Isaac.lang));
 
       // Remove collected and special items from variants
-      let currentItemPool = this.items.filter(item => {
-        return playerItems.findIndex(playerItem => playerItem == item.id) && !item.special
-      });
+      let currentItemPool = [];
+
+      if (this.Isaac.gamemode != 2) {
+        currentItemPool = this.items.filter(item => {
+          return !(playerItems.some(playerItem => playerItem == item.id) || item.special || ignorableItems.some(ignItem => ignItem == item.name))
+        });
+      }
+      else {
+        currentItemPool = this.items.filter(item => {
+          return !playerItems.some(playerItem => playerItem == item.id)
+        });
+      }
 
       // Set poll variants
       this.variants = getRandomElementsFromArr(currentItemPool, 3)

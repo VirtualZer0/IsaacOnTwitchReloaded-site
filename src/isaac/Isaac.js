@@ -107,8 +107,9 @@ export default class Isaac {
       this.start();
     });
 
-    this.services.itmr.addHandler('toggleMovePlayer', ({enable}) => {
-      this.specialMessageHandler.state.movePlayer = enable;
+    this.services.itmr.addHandler('toggleSpecialHandler', ({name, enable}) => {
+      this.services.itmr._log(`Handler ${name} set to ${enable}`)
+      this.specialMessageHandler.state[name] = enable;
     });
   }
 
