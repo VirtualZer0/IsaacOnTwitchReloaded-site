@@ -194,7 +194,7 @@ export default class DefaultPoll extends BasicPoll {
    */
   getWinner () {
 
-    if (this.votes[0] == this.votes[1] == this.votes[2] || this.allVotesCount == 0) {
+    if ((this.votes[0] == this.votes[1] && this.votes[1]  == this.votes[2]) || this.allVotesCount == 0) {
       return this.variants[Math.floor(Math.random() * this.variants.length)];
     }
 
