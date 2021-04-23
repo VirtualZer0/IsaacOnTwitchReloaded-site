@@ -44,7 +44,7 @@ export default class YoutubeConnect {
       this.chatId = res.items[0].liveStreamingDetails.activeLiveChatId;
       this.channel = res.items[0].snippet.channelId
       this._updateChat();
-      this.updTimer = setInterval(this._updateChat.bind(this), 3000);
+      this.updTimer = setInterval(this._updateChat.bind(this), 5000);
 
       this._log("Connected to " + this.chatId);
       this._log("Channel id: " + this.channel);
@@ -64,7 +64,7 @@ export default class YoutubeConnect {
   updateViewers() {
 
     return fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${this.streamId}&fields=items%2FliveStreamingDetails%2FconcurrentViewers&key=${this.apikey}`
+      `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${this.streamId}&fields=items%2FliveStreamingDetails&key=${this.apikey}`
       )
       .then(res => res.json())
       .then(res => {
