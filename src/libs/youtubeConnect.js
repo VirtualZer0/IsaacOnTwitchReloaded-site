@@ -8,7 +8,7 @@ export default class YoutubeConnect {
    */
   constructor (streamURLString) {
 
-    this.apikey = "AIzaSyCULdGwd1OoBvvgGB7Ajc4J7x47gKl2Y0s";
+    this.apikey = "AIzaSyCo2Oz1HI156E6xghkhACLVp2_sgBzCug4";
     this.streamURL = new URL(streamURLString);
     this.lastMessagesId = [];
     this.vuewersCount = 0;
