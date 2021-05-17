@@ -167,6 +167,12 @@ export default class IsaacConnect {
     })
     .then (res => res.json())
     .then (res => {
+      if (!this.isConnected) {
+        this.sendToGame({
+          m: 'removeText',
+          d: ['siteMessage']
+        })
+      }
       this.isConnected = true;
       res.out.forEach(com => {
         if (this.handlers[com.c]) {

@@ -240,7 +240,7 @@ export default class PocketsPoll extends BasicPoll {
         }
 
         // If winner is equal 'half', set special message
-        if (winner == 'half') {
+        else if (winner == 'half') {
           if (this.pollType.name == "Keys")
             this.text.firstline.setText?.(`${t('pollRemoveResult', this.Isaac.lang)}: ${t('halfkeys', this.Isaac.lang)}`);
           else if (this.pollType.name == "Bombs")
