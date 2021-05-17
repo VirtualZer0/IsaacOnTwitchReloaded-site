@@ -13,6 +13,7 @@ export default class YoutubeConnect {
     this.lastMessagesId = [];
     this.vuewersCount = 0;
     this.channel = null;
+    this.nextPageToken = null;
 
     this.consoleStyle = 'background-color: #FF0000; color: #FFFFFF; border-radius: 100px;padding: 1px 4px;';
 
@@ -36,13 +37,15 @@ export default class YoutubeConnect {
   }
 
   connect () {
-    fetch("https://www.googleapis.com/youtube/v3/videos?id=" + this.streamId + "&part=snippet,liveStreamingDetails&key=" + this.apikey)
+    fetch(
+      "https://www.googleapis.com/youtube/v3/videos?id=" + this.streamId + "&part=snippet,liveStreamingDetails&key=" + this.apikey
+    )
     .then(res => {
       return res.json()
     })
     .then (res => {
       this.chatId = res.items[0].liveStreamingDetails.activeLiveChatId;
-      this.channel = res.items[0].snippet.channelId
+      this.channel = res.items[0].snippet.channelId;
       this._updateChat();
       this.updTimer = setInterval(this._updateChat.bind(this), 5000);
 
@@ -76,12 +79,19 @@ export default class YoutubeConnect {
   }
 
   _updateChat () {
-    fetch("https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=" + this.chatId + "&part=id,snippet,authorDetails&key=" + this.apikey)
+    fetch(
+      "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=" + this.chatId + "&part=id,snippet,authorDetails&maxResults=100&key=" + this.apikey +
+      (this.nextPageToken ? '&nextPageToken=' + this.nextPageToken : '')
+    )
     .then (res => {
       return res.json();
     })
     .then (res => {
       res.items.forEach(msg => {
+        if (res?.nextPageToken) {
+          this.nextPageToken = res.nextPageToken;
+        }
+
         // If message exists, just skip it
         if (this.lastMessagesId.includes(msg.id)) return;
 
