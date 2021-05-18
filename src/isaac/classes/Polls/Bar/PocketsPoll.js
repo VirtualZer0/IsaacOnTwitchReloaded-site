@@ -337,7 +337,7 @@ export default class PocketsPoll extends BasicPoll {
       this.allVotesCount++;
     }
 
-    if (this.fillerVotes) {
+    if (this.fillerVotes && this.positiveVotes >= 2) {
       this.positiveVotes--;
       this.allVotesCount -= 2;
       this.fillerVotes = false;
