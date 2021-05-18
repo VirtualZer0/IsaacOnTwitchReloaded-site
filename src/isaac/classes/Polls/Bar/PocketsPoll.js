@@ -43,6 +43,9 @@ export default class PocketsPoll extends BasicPoll {
     /** This poll needs request player type */
     this.ready = false;
 
+    /** Remove filler votes @type {Boolean} */
+    this.fillerVotes = true;
+
     // This poll do not have lines until the end
     this.text.secondline = null;
   }
@@ -332,6 +335,12 @@ export default class PocketsPoll extends BasicPoll {
 
       this.users[user] = positive;
       this.allVotesCount++;
+    }
+
+    if (this.fillerVotes) {
+      this.positiveVotes--;
+      this.allVotesCount -= 2;
+      this.fillerVotes = false;
     }
   }
 
