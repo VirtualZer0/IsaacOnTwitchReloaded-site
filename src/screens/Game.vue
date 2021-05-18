@@ -44,6 +44,7 @@ export default {
   data: () => ({
 
     gameTime: '00:00:00',
+    titleState: false,
     viewersInPoll: 0,
     startTime: null,
     gameTimeTimer: null,
@@ -85,6 +86,19 @@ export default {
     },
 
     updInfo () {
+
+      this.titleState = !this.titleState;
+
+      if (this.$root.isaac.services.itmr.isConnected) {
+        if (!this.$root.isaac.isPaused)
+          window.document.title = this.titleState ?  "🟢 Isaaac On Twitch" : "⚪️ Isaaac On Twitch";
+        else
+          window.document.title = this.titleState ?  "🟡 Isaaac On Twitch" : "⚪️ Isaaac On Twitch";
+      }
+      else {
+        window.document.title = this.titleState ?  "🔴 Isaaac On Twitch" : "⚪️ Isaaac On Twitch";
+      }
+
       if (this.$root?.isaac?.currentAction?.allVotesCount)
       {
         this.viewersInPoll = this.$root?.isaac?.currentAction?.allVotesCount
