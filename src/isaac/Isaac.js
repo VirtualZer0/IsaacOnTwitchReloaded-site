@@ -90,6 +90,11 @@ export default class Isaac {
       this.services.youtube.events.onSuperchat = this.onDonate.bind(this);
     }
 
+    // Send settings on reconnect
+    this.$services.itmr.events.onReconnect = () => {
+      this.sendSettings();
+    }
+
     // Add output handlers
     this.services.itmr.addHandler('changeGameState', ({paused}) => {
       this.isPaused = paused;

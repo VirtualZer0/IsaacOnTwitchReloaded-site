@@ -14,7 +14,8 @@ export default class IsaacConnect {
 
     // Event handlers
     this.events = {
-      onConnect: () => {}
+      onConnect: () => {},
+      onReconnect: () => {}
     };
 
     this.port = port; // Game port
@@ -172,6 +173,8 @@ export default class IsaacConnect {
           m: 'removeText',
           d: ['siteMessage']
         })
+
+        this._signal('onReconnect');
       }
       this.isConnected = true;
       res.out.forEach(com => {
