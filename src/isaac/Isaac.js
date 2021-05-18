@@ -91,7 +91,7 @@ export default class Isaac {
     }
 
     // Send settings on reconnect
-    this.$services.itmr.events.onReconnect = () => {
+    this.services.itmr.events.onReconnect = () => {
       this.sendSettings();
     }
 

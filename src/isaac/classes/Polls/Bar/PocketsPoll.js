@@ -349,7 +349,12 @@ export default class PocketsPoll extends BasicPoll {
    * @returns {String|Number} Winner
    */
   getWinner() {
-    return this.pollType.sectors[Math.ceil(this.positiveVotes / this.allVotesCount * this.pollType.sectors.length) - 1];
+    if (this.positiveVotes == 0) {
+      return this.pollType.sectors[0];
+    }
+    else {
+      return this.pollType.sectors[Math.ceil(this.positiveVotes / this.allVotesCount * this.pollType.sectors.length) - 1];
+    }
   }
 
   freeze() {
