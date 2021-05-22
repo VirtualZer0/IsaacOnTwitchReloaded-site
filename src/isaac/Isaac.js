@@ -90,9 +90,13 @@ export default class Isaac {
       this.services.youtube.events.onSuperchat = this.onDonate.bind(this);
     }
 
-    // Send settings on reconnect
+    // Send settings on reconnect and restore additional graphics for polls
     this.services.itmr.events.onReconnect = () => {
       this.sendSettings();
+      console.log(this.currentAction?.isFirstUpdate === false);
+      if (this.currentAction && this.currentAction?.isFirstUpdate === false) {
+        this.currentAction.isFirstUpdate = true;
+      }
     }
 
     // Add output handlers

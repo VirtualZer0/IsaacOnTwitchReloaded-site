@@ -87,4 +87,11 @@ export default [
     trinket: "Broken D4-R4 console"
   },
 
+  {
+    name: "bmvanquisher",
+    twitch: "bmvanquisher",
+    youtube: null,
+    trinket: "Pug tail"
+  }
+
 ]

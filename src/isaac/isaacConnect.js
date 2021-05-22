@@ -169,6 +169,9 @@ export default class IsaacConnect {
     .then (res => res.json())
     .then (res => {
       if (!this.isConnected) {
+
+        console.log("send reconnect");
+
         this.sendToGame({
           m: 'removeText',
           d: ['siteMessage']
@@ -176,6 +179,7 @@ export default class IsaacConnect {
 
         this._signal('onReconnect');
       }
+
       this.isConnected = true;
       res.out.forEach(com => {
         if (this.handlers[com.c]) {
