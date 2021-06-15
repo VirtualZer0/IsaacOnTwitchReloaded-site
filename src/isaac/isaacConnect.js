@@ -146,7 +146,8 @@ export default class IsaacConnect {
       this._send(data, repeat, high)
       .then (res => res.json())
       .catch(err => {
-        console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО - ${JSON.stringify(err)}`);
+        console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО`);
+        console.error(err);
         reject(err);
       })
       .then(
@@ -156,8 +157,8 @@ export default class IsaacConnect {
         }
       )
       .catch(err => {
-        console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО - ${JSON.stringify(err)}`);
-        reject (err);
+        console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО`);
+        console.error(err);
       });
     });
 
@@ -173,7 +174,8 @@ export default class IsaacConnect {
     })
     .then (res => res.json())
     .catch(err => {
-      console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО - ${JSON.stringify(err)}`);
+      console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО`);
+      console.error(err);
     })
     .then (res => {
       if (!this.isConnected) {
