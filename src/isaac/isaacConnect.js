@@ -190,6 +190,7 @@ export default class IsaacConnect {
         this._signal('onReconnect');
       }
 
+
       this.isConnected = true;
       res.out.forEach(com => {
         if (this.handlers[com.c]) {
