@@ -106,10 +106,10 @@ export default class IsaacConnect {
 
           // Call event onConnect
           this._signal('onConnect');
-        })
+        });
 
       }
-    })
+    });
   }
 
 
@@ -145,6 +145,10 @@ export default class IsaacConnect {
     return new Promise((resolve, reject) => {
       this._send(data, repeat, high)
       .then (res => res.json())
+      .catch(err => {
+        console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО - ${JSON.stringify(err)}`);
+        reject(err);
+      })
       .then(
         res => {
           this.isConnected = true;
@@ -152,6 +156,7 @@ export default class IsaacConnect {
         }
       )
       .catch(err => {
+        console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО - ${JSON.stringify(err)}`);
         reject (err);
       });
     });
@@ -167,6 +172,9 @@ export default class IsaacConnect {
       body: `||{"m":"out"}||\n`
     })
     .then (res => res.json())
+    .catch(err => {
+      console.error(`СТРИМЕР, СЛУЧИЛОСЬ СЛЕДУЮЩЕЕ ГОВНО - ${JSON.stringify(err)}`);
+    })
     .then (res => {
       if (!this.isConnected) {
 
