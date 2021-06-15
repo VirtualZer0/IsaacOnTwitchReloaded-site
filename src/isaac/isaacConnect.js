@@ -39,7 +39,6 @@ export default class IsaacConnect {
   search () {
     fetch(`http://localhost:${this.port}`, {
       method: 'POST',
-      mode: 'no-cors',
       body: `||{"m":"ping"}||\n`
     })
     .then (res => res.json())
@@ -67,7 +66,6 @@ export default class IsaacConnect {
     setInterval(() => {
       fetch(`http://localhost:${this.port}`, {
         method: 'POST',
-        mode: 'no-cors',
         body: `||{"m":"ping"}||\n`
       })
       .then (res => res.json())
@@ -172,7 +170,6 @@ export default class IsaacConnect {
   checkOutput () {
     fetch(`http://localhost:${this.port}`, {
       method: 'POST',
-      mode: 'no-cors',
       body: `||{"m":"out"}||\n`
     })
     .then (res => res.json())
@@ -255,7 +252,6 @@ export default class IsaacConnect {
   _send (data, repeat = 1, high = false) {
     return fetch(`http://localhost:${this.port}`, {
       method: 'POST',
-      mode: 'no-cors',
       body: `||${JSON.stringify(data)}||\n`
     }).catch(function (error) {
 
