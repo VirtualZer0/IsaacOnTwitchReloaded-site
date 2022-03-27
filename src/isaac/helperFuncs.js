@@ -52,3 +52,25 @@ export function randString(length) {
   }
   return result;
 }
+
+/**
+ * Converts #ITEM_NAME to Item Name
+ * @param {String} name - Original name
+ * @returns - Normalized name
+ */
+export function getNormalName(name) {
+  return titleCase(name.replace(/^#/, '').replace('_NAME', '').replace('_', ' ').replace('MOMS ', 'Mom\'s ').replace('DADS ', 'Dad\'s '));
+}
+
+/**
+ * Capitalize first letter of each word
+ * @param {String} str - Original string
+ * @returns - Capitalized string
+ */
+export function titleCase(str) {
+  var splitStr = str.toLowerCase().split(' ');
+  for (var i = 0; i < splitStr.length; i++) {
+    splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  return splitStr.join(' ');
+}

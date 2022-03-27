@@ -1,21 +1,22 @@
 export default [
 
-  "The Polaroid",
-  "The Negative",
-  "Key Piece 1",
-  "Key Piece 2",
-  "Broken Shovel",
-  "Mom's Shovel",
-  "Knife Piece 1",
-  "Knife Piece 2",
-  "Dad's Note",
-  "Dogma",
+  "#THE_POLAROID_NAME",
+  "#THE_NEGATIVE_NAME",
+  "#KEY_PIECE_1_NAME",
+  "#KEY_PIECE_2_NAME",
+  "#BROKEN_SHOVEL_NAME",
+  "#BROKEN_SHOVEL2_NAME",
+  "#MOMS_SHOVEL_NAME",
+  "#KNIFE_PIECE_1_NAME",
+  "#KNIFE_PIECE_2_NAME",
+  "#DADS_NOTE_NAME",
+  "#DOGMA_NAME",
 
-  // Powerful items and tainted plyer items
-  "Death Certificate",
-  "Bag of Crafting",
-  "Flip",
-  "Recall",
-  "Hold"
+  // Powerful items and tainted player items
+  "#DEATH_CERTIFICATE_NAME",
+  "#BAG_OF_CRAFTING_NAME",
+  "#FLIP_NAME",
+  "#RECALL_NAME",
+  "#HOLD_NAME"
 
 ]

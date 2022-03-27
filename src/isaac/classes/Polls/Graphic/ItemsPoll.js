@@ -2,6 +2,7 @@ import Colors from '../../../enums/Colors';
 import ITMRText from '../../../models/ITMRText'
 import Isaac from '../../../Isaac'
 import ignorableItems from '../../../data/ignorableItems'
+import { getNormalName } from '../../../helperFuncs';
 
 import t from '../../../../plugins/locale/translateFunction';
 import { getRandomElementsFromArr } from '../../../helperFuncs'
@@ -102,7 +103,7 @@ export default class ItemsPoll extends GraphicPoll {
     switch (this.action) {
 
       case "giveItem":
-        this.text.firstline.setText(`${t('pollGiveResult', this.Isaac.lang)} ${winner.name}`);
+        this.text.firstline.setText(`${t('pollGiveResult', this.Isaac.lang)} ${getNormalName(winner.name)}`);
         this.Isaac.services.itmr.sendToGame({
           m: 'itemAction',
           d: {
@@ -113,7 +114,7 @@ export default class ItemsPoll extends GraphicPoll {
         break;
 
       case "removeItem":
-        this.text.firstline.setText(`${t('pollRemoveResult', this.Isaac.lang)} ${winner.name}`);
+        this.text.firstline.setText(`${t('pollRemoveResult', this.Isaac.lang)} ${getNormalName(winner.name)}`);
         this.Isaac.services.itmr.sendToGame({
           m: 'itemAction',
           d: {
