@@ -1,5 +1,9 @@
-import execa from 'execa'
-import fs from 'fs'
+const fs = require("fs");
+
+let execa = null;
+(async () => {
+  execa = (await import('execa')).execaCommand;
+})();
 
 (async () => {
   try {
