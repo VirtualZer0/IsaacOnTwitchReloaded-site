@@ -1,9 +1,5 @@
+const execa = require("execa");
 const fs = require("fs");
-
-let execa = null;
-(async () => {
-  execa = (await import('execa')).execaCommand;
-})();
 
 (async () => {
   try {
