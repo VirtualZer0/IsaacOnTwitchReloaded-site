@@ -1,4 +1,4 @@
-import { execa } from 'execa';
+const execa = require("execa");
 const fs = require("fs");
 
 (async () => {
