@@ -1,6 +1,7 @@
 import Colors from '../../../enums/Colors';
 import ITMRText from '../../../models/ITMRText'
 import Isaac from '../../../Isaac'
+import { getNormalName } from '../../../helperFuncs';
 
 import t from '../../../../plugins/locale/translateFunction';
 import { getRandomElementsFromArr } from '../../../helperFuncs'
@@ -31,7 +32,7 @@ export default class TrinketsPoll extends GraphicPoll {
 
     let winner = this.getWinner();
 
-    this.text.firstline.setText(`${t('pollGiveResult', this.Isaac.lang)} ${winner.name}`);
+    this.text.firstline.setText(`${t('pollGiveResult', this.Isaac.lang)} ${getNormalName(winner.name)}`);
     this.Isaac.services.itmr.sendToGame({
       m: 'trinketAction',
       d: {
