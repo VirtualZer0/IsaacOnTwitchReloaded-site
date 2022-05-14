@@ -76,9 +76,9 @@ export default class GraphicPoll extends BasicPoll {
       this.Isaac.services.itmr.sendToGame({
         m: 'addPollframes',
         d: {
-          f1: this.variants[0].gfx,
-          f2: this.variants[1].gfx,
-          f3: this.variants[2].gfx,
+          f1: this.variants[0]?.gfx,
+          f2: this.variants[1]?.gfx,
+          f3: this.variants[2]?.gfx,
         }
       });
 
@@ -341,9 +341,9 @@ export default class GraphicPoll extends BasicPoll {
       this.Isaac.services.itmr.sendToGame({
         m: 'addPollframes',
         d: {
-          f1: this.variants[0].gfx,
-          f2: this.variants[1].gfx,
-          f3: this.variants[2].gfx,
+          f1: this.variants[0]?.gfx,
+          f2: this.variants[1]?.gfx,
+          f3: this.variants[2]?.gfx,
         }
       });
 
