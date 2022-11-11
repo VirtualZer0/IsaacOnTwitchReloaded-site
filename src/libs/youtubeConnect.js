@@ -7,8 +7,7 @@ export default class YoutubeConnect {
    * @param {String} streamURLString - URL for YouTube stream
    */
   constructor (streamURLString) {
-
-    this.apikey = "AIzaSyCo2Oz1HI156E6xghkhACLVp2_sgBzCug4";
+    this.apikey = "wgnn-wBx-_VT5Nu996o8ylc-t786swbRBySazIA".split('').reverse().join('');
     this.streamURL = new URL(streamURLString);
     this.lastMessagesId = [];
     this.vuewersCount = 0;
