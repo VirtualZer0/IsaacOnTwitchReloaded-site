@@ -3,7 +3,7 @@ export default {
     "start": "Start",
     "community": "Community",
     "download": "Download",
-    "connectingWait": "Connecting to game server...",
+    "connectingWait": "Waiting to launch a new game...",
     "cancel": "Cancel",
     "whoAreYou": "Who Are You?",
     "play": "Play",

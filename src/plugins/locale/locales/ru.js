@@ -3,7 +3,7 @@ export default {
     "start" : "Начать",
     "community": "Сообщество",
     "download": "Скачать",
-    "connectingWait": "Подключение к серверу игры...",
+    "connectingWait": "Ожидаем запуска нового рана...",
     "cancel": "Отмена",
     "whoAreYou": "Кто ты?",
     "play": "Старт",
