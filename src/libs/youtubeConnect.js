@@ -46,7 +46,7 @@ export default class YoutubeConnect {
       this.chatId = res.items[0].liveStreamingDetails.activeLiveChatId;
       this.channel = res.items[0].snippet.channelId;
       this._updateChat();
-      this.updTimer = setInterval(this._updateChat.bind(this), 5000);
+      this.updTimer = setInterval(this._updateChat.bind(this), 6500);
 
       this._log("Connected to " + this.chatId);
       this._log("Channel id: " + this.channel);
